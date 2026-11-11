@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SegCar — Cadastro Completo & Ativação de Rastreamento</title>
+  <meta name="description" content="Página de cadastro completo SegCar com dados de endereço, veículo e plano de telemetria." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Anime.js Engine de Animação -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: rgba(16, 23, 42, 0.78);
+      --bg-card-border: rgba(255, 255, 255, 0.09);
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --grad-primary: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+      --grad-card: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Fundo ambiental dinâmico */
+    .glow-bg {
+      position: absolute;
+      top: 25%;
+      left: 50%;
+      width: 850px;
+      height: 850px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(6, 182, 212, 0.04) 45%, transparent 70%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      z-index: 10;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Top Logo */
+    .header-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.75rem;
+      text-align: center;
+    }
+
+    .logo-icon {
+      width: 58px;
+      height: 58px;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 0 16px rgba(6, 182, 212, 0.6));
+    }
+
+    .logo-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .logo-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    /* Card Principal */
+    .register-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    /* Barra de Passos & Trilha de Percurso */
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.25rem;
+      position: relative;
+      padding: 0 1.5rem;
+    }
+
+    /* Pista Base */
+    .route-track-bg {
+      position: absolute;
+      top: 13px;
+      left: calc(1.5rem + 14px);
+      right: calc(1.5rem + 14px);
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      z-index: 1;
+    }
+
+    /* Progresso Percorrido */
+    .route-track-progress {
+      position: absolute;
+      top: 13px;
+      left: calc(1.5rem + 14px);
+      width: 0px;
+      height: 2px;
+      background: rgba(56, 189, 248, 0.4);
+      border-radius: 2px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Ícone de Carro - O Único Elemento Iluminado */
+    .car-runner {
+      position: absolute;
+      top: 2px;
+      left: calc(1.5rem + 14px);
+      width: 32px;
+      height: 24px;
+      margin-left: -16px;
+      z-index: 5;
+      pointer-events: none;
+      transform-origin: center center;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Super brilho e iluminação do carro */
+      filter: drop-shadow(0 0 8px #38bdf8) drop-shadow(0 0 16px rgba(6, 182, 212, 0.95)) drop-shadow(0 0 28px rgba(56, 189, 248, 0.85));
+      animation: carGlow 2.2s ease-in-out infinite alternate;
+    }
+
+    .car-runner::before {
+      content: '';
+      position: absolute;
+      width: 38px;
+      height: 26px;
+      background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.65) 0%, rgba(6, 182, 212, 0.3) 45%, transparent 75%);
+      border-radius: 50%;
+      z-index: -1;
+      filter: blur(4px);
+      pointer-events: none;
+    }
+
+    @keyframes carGlow {
+      0% {
+        filter: drop-shadow(0 0 6px #38bdf8) drop-shadow(0 0 14px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 22px rgba(6, 182, 212, 0.6));
+      }
+      100% {
+        filter: drop-shadow(0 0 10px #38bdf8) drop-shadow(0 0 22px #06b6d4) drop-shadow(0 0 34px rgba(56, 189, 248, 0.95));
+      }
+    }
+
+    .car-svg {
+      width: 100%;
+      height: 100%;
+      fill: currentColor;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      z-index: 3;
+      cursor: pointer;
+    }
+
+    /* Ponto de parada sem numeração e sem iluminação */
+    .step-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      margin: 6px 0;
+      position: relative;
+    }
+
+    .step-item.active .step-dot {
+      background: #334155;
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: scale(1.15);
+      /* Sem iluminação / sem glow, foco luminoso exclusivo no carro */
+    }
+
+    .step-item.completed .step-dot {
+      background: #1e293b;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .step-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: color 0.3s ease;
+    }
+
+    .step-item.active .step-title {
+      color: var(--accent-cyan);
+    }
+
+    /* Conteúdo das Etapas */
+    .step-pane {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step-pane.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+    }
+
+    /* Grid do Formulário */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.1rem;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .required-star {
+      color: var(--accent-rose);
+      margin-left: 2px;
+    }
+
+    input, select {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    /* Indicador CEP Loading */
+    .cep-loader {
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      display: none;
+    }
+
+    /* Seletor de Planos */
+    .plans-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-card {
+      background: var(--grad-card);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 1.3rem;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .plan-card:hover {
+      border-color: rgba(6, 182, 212, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .plan-card.selected {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    .badge-pop {
+      position: absolute;
+      top: -10px;
+      right: 15px;
+      background: var(--grad-primary);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .plan-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+
+    .plan-price {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      margin-bottom: 0.8rem;
+    }
+
+    .plan-price span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .plan-features {
+      list-style: none;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .plan-features li svg {
+      color: var(--accent-emerald);
+      flex-shrink: 0;
+    }
+
+    /* Seletor de Pagamento */
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pay-btn {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.9rem;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .pay-btn.selected {
+      border-color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.1);
+      color: #fff;
+    }
+
+    /* Força de Senha */
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+    }
+
+    /* Botões de Ação */
+    .step-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.85rem 1.6rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+      margin-left: auto;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .alert {
+      padding: 0.85rem 1.2rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .alert.error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .alert.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    .switch-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .switch-footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    .switch-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .register-card { padding: 1.5rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .full-width { grid-column: span 1; }
+      .plans-container { grid-template-columns: 1fr; }
+      .payment-options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-bg"></div>
+
+  <div class="container">
+    
+    <!-- Topo / Branding -->
+    <div class="header-logo">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#3b82f6"/>
+            <stop offset="1" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+        <path d="M2 12h20"/>
+        <circle cx="12" cy="12" r="3" fill="#06b6d4" stroke="none"/>
+      </svg>
+      <div class="logo-title">SegCar</div>
+      <div class="logo-sub">Plataforma de Telemetria & Rastreamento Inteligente</div>
+    </div>
+
+    <!-- Card de Registro -->
+    <div class="register-card">
+
+      <!-- Indicador de Etapas com Carro Normal Animado -->
+      <div class="step-indicator" id="stepIndicatorTrack">
+        <!-- Linha da Pista -->
+        <div class="route-track-bg"></div>
+        <div class="route-track-progress" id="routeTrackProgress"></div>
+
+        <!-- Ícone de Carro Iluminado (Anime.js) -->
+        <div class="car-runner" id="stepCarRunner">
+          <svg class="car-svg" viewBox="0 0 24 24">
+            <path d="M5 11l1.5-4.5h11L19 11h2c.55 0 1 .45 1 1v4c0 .55-.45 1-1 1h-1.18c-.41 1.16-1.52 2-2.82 2s-2.41-.84-2.82-2H8.82c-.41 1.16-1.52 2-2.82 2s-2.41-.84-2.82-2H2c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3zm2 4.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm10 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM6.5 10h11l-1-3h-9l-1 3z"/>
+          </svg>
+        </div>
+
+        <div class="step-item active" id="stepIndicator1" onclick="goToStep(1)">
+          <div class="step-dot"></div>
+          <span class="step-title">Titular & Acesso</span>
+        </div>
+        <div class="step-item" id="stepIndicator2" onclick="goToStep(2)">
+          <div class="step-dot"></div>
+          <span class="step-title">Endereço</span>
+        </div>
+        <div class="step-item" id="stepIndicator3" onclick="goToStep(3)">
+          <div class="step-dot"></div>
+          <span class="step-title">Veículo & Plano</span>
+        </div>
+      </div>
+
+      <div class="alert" id="registerAlert"></div>
+
+      <form id="fullRegisterForm" onsubmit="handleRegistrationSubmit(event)">
+
+        <!-- ============================================================= -->
+        <!-- ETAPA 1: DADOS DO TITULAR & CONTA                             -->
+        <!-- ============================================================= -->
+        <div class="step-pane active" id="stepPane1">
+          <div class="section-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Dados Pessoais do Titular
+          </div>
+          <p class="section-desc">Informe seus dados para identificação e login no painel.</p>
+
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="reg-name">Nome Completo <span class="required-star">*</span></label>
+              <input type="text" id="reg-name" placeholder="Ex: Carlos Eduardo de Souza" required maxlength="100" />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-cpf">CPF <span class="required-star">*</span></label>
+              <input type="text" id="reg-cpf" placeholder="000.000.000-00" required maxlength="14" />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-phone">Telefone / WhatsApp <span class="required-star">*</span></label>
+              <input type="text" id="reg-phone" placeholder="(19) 99999-9999" required maxlength="15" />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-birth">Data de Nascimento <span class="required-star">*</span></label>
+              <input type="date" id="reg-birth" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-email">E-mail Principal <span class="required-star">*</span></label>
+              <input type="email" id="reg-email" placeholder="seuemail@provedor.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-password">Senha de Acesso <span class="required-star">*</span></label>
+              <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" minlength="6" required oninput="checkPassStrength(this.value)" />
+              <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-password-conf">Confirmar Senha <span class="required-star">*</span></label>
+              <input type="password" id="reg-password-conf" placeholder="Repita a senha" minlength="6" required />
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-primary" onclick="validateAndGoStep(2)">
+              Avançar para Endereço
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- ETAPA 2: ENDEREÇO                                             -->
+        <!-- ============================================================= -->
+        <div class="step-pane" id="stepPane2">
+          <div class="section-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Endereço Residencial / Comercial
+          </div>
+          <p class="section-desc">Digite o CEP para preenchimento automático das informações de endereço.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="reg-cep">
+                CEP <span class="required-star">*</span>
+                <span class="cep-loader" id="cepLoader">Buscando endereço...</span>
+              </label>
+              <input type="text" id="reg-cep" placeholder="00000-000" maxlength="9" onblur="buscarCep(this.value)" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-number">Número <span class="required-star">*</span></label>
+              <input type="text" id="reg-number" placeholder="Ex: 1250" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="reg-street">Logradouro / Rua <span class="required-star">*</span></label>
+              <input type="text" id="reg-street" placeholder="Rua, Avenida, Praça..." required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-complement">Complemento</label>
+              <input type="text" id="reg-complement" placeholder="Apto 12, Bloco B..." />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-neighborhood">Bairro <span class="required-star">*</span></label>
+              <input type="text" id="reg-neighborhood" placeholder="Bairro" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-city">Cidade <span class="required-star">*</span></label>
+              <input type="text" id="reg-city" value="Rio Claro" required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-state">Estado (UF) <span class="required-star">*</span></label>
+              <input type="text" id="reg-state" value="SP" maxlength="2" required />
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-secondary" onclick="goToStep(1)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Voltar
+            </button>
+            <button type="button" class="btn btn-primary" onclick="validateAndGoStep(3)">
+              Avançar para Veículo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- ETAPA 3: VEÍCULO, PLANO & PAGAMENTO                           -->
+        <!-- ============================================================= -->
+        <div class="step-pane" id="stepPane3">
+          <div class="section-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13"/>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+              <circle cx="5.5" cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            Veículo & Plano de Rastreamento
+          </div>
+          <p class="section-desc">Cadastre seu primeiro veículo e escolha seu plano de monitoramento.</p>
+
+          <div class="form-grid" style="margin-bottom: 1.5rem;">
+            <div class="form-group">
+              <label for="reg-model">Modelo do Veículo <span class="required-star">*</span></label>
+              <input type="text" id="reg-model" placeholder="Ex: Honda Civic Touring, Onix, Corolla..." required />
+            </div>
+
+            <div class="form-group">
+              <label for="reg-plate">Placa do Veículo <span class="required-star">*</span></label>
+              <input type="text" id="reg-plate" placeholder="ABC-1234 ou ABC1D23" maxlength="8" required style="text-transform: uppercase;" />
+            </div>
+          </div>
+
+          <!-- Seleção de Planos -->
+          <label style="margin-bottom: 0.8rem; font-size: 0.9rem;">Escolha seu Plano de Telemetria:</label>
+          <div class="plans-container">
+            <div class="plan-card selected" id="planCard1" onclick="selectPlan(1)">
+              <div class="plan-name">SegCar Básico</div>
+              <div class="plan-price">R$ 49,90 <span>/mês</span></div>
+              <ul class="plan-features">
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Rastreamento GPS 24 horas</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Histórico de Rotas (30 dias)</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Suporte a 1 Veículo</li>
+              </ul>
+            </div>
+
+            <div class="plan-card" id="planCard2" onclick="selectPlan(2)">
+              <div class="badge-pop">Mais Escolhido</div>
+              <div class="plan-name">SegCar Frota Pro</div>
+              <div class="plan-price">R$ 99,90 <span>/mês</span></div>
+              <ul class="plan-features">
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Atualização instantânea 1s</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Histórico Ilimitado & Relatórios</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Até 5 Veículos no mesmo painel</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Seleção do Método de Pagamento -->
+          <label style="margin-bottom: 0.8rem; font-size: 0.9rem;">Forma de Pagamento de Preferência:</label>
+          <div class="payment-options">
+            <div class="pay-btn selected" id="payMethodPix" onclick="selectPayMethod('pix')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Pix (Instantâneo)
+            </div>
+            <div class="pay-btn" id="payMethodCard" onclick="selectPayMethod('credit_card')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Cartão de Crédito
+            </div>
+            <div class="pay-btn" id="payMethodBoleto" onclick="selectPayMethod('boleto')">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Boleto Bancário
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Voltar
+            </button>
+            <button type="submit" class="btn btn-primary" id="btnSubmit">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Concluir Cadastro e Ativar
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+      <div class="switch-footer">
+        Já possui cadastro no SegCar? <a href="login.html">Fazer Login</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost/segcar/sketch_jul12a/api/public/index.php';
+    let currentStep = 1;
+    let selectedPlanId = 1;
+    let selectedPayment = 'pix';
+
+    // Navegação entre passos com animação veicular
+    function goToStep(step) {
+      if (step < 1 || step > 3) return;
+      
+      const prevStep = currentStep;
+      currentStep = step;
+
+      // Panes
+      document.querySelectorAll('.step-pane').forEach((p, idx) => {
+        p.classList.toggle('active', idx + 1 === step);
+      });
+
+      // Indicators
+      document.querySelectorAll('.step-item').forEach((item, idx) => {
+        const stepNum = idx + 1;
+        item.classList.toggle('active', stepNum === step);
+        item.classList.toggle('completed', stepNum < step);
+      });
+
+      // Animar o Carro até a etapa de destino
+      animateCarToStep(step, prevStep);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- ANIMAÇÃO DO CARRO NO PERCURSO (Anime.js) ---
+    let isCarSimulating = false;
+
+    function getStepCenter(stepNumber) {
+      const track = document.getElementById('stepIndicatorTrack');
+      const stepItem = document.getElementById(`stepIndicator${stepNumber}`);
+      if (!track || !stepItem) return 0;
+
+      const trackRect = track.getBoundingClientRect();
+      const stepRect = stepItem.getBoundingClientRect();
+      return (stepRect.left + (stepRect.width / 2)) - trackRect.left;
+    }
+
+    function initCarPosition() {
+      const car = document.getElementById('stepCarRunner');
+      const progress = document.getElementById('routeTrackProgress');
+      if (!car) return;
+
+      const targetX = getStepCenter(currentStep);
+      car.style.left = `${targetX}px`;
+
+      const startX = getStepCenter(1);
+      if (progress) {
+        progress.style.width = Math.max(0, targetX - startX) + 'px';
+      }
+    }
+
+    function animateCarToStep(targetStep, fromStep = currentStep) {
+      const car = document.getElementById('stepCarRunner');
+      const progress = document.getElementById('routeTrackProgress');
+      const track = document.getElementById('stepIndicatorTrack');
+      if (!car || !track || typeof anime === 'undefined') return;
+
+      const targetX = getStepCenter(targetStep);
+      const currentX = parseFloat(car.style.left || getStepCenter(fromStep));
+      const startX = getStepCenter(1);
+      const isForward = targetX >= currentX;
+      const direction = isForward ? 1 : -1;
+
+      // Linha do tempo Anime.js para o ícone de carro
+      const tl = anime.timeline({
+        duration: 750
+      });
+
+      // 1. O Carro se desloca suavemente até a etapa
+      tl.add({
+        targets: car,
+        left: `${targetX}px`,
+        scaleX: direction,
+        duration: 750,
+        easing: 'cubicBezier(0.25, 1, 0.5, 1)',
+        update: function() {
+          if (progress) {
+            const liveX = parseFloat(car.style.left || targetX);
+            progress.style.width = Math.max(0, liveX - startX) + 'px';
+          }
+        }
+      });
+
+      // 2. Leve amortecimento do carro ao estacionar no ponto
+      tl.add({
+        targets: car,
+        scaleY: [1, 0.85, 1],
+        duration: 350,
+        easing: 'easeOutQuad'
+      }, '-=150');
+    }
+
+    // Inicialização ao carregar e redimensionar tela
+    window.addEventListener('load', () => {
+      setTimeout(initCarPosition, 100);
+    });
+    window.addEventListener('resize', () => {
+      initCarPosition();
+    });
+
+    function showAlert(msg, type = 'error') {
+      const el = document.getElementById('registerAlert');
+      el.textContent = msg;
+      el.className = `alert ${type}`;
+      el.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function clearAlert() {
+      const el = document.getElementById('registerAlert');
+      el.style.display = 'none';
+    }
+
+    // Validação para avançar
+    function validateAndGoStep(targetStep) {
+      clearAlert();
+
+      if (currentStep === 1 && targetStep > 1) {
+        const name = document.getElementById('reg-name').value.trim();
+        const cpf = document.getElementById('reg-cpf').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const birth = document.getElementById('reg-birth').value;
+        const email = document.getElementById('reg-email').value.trim();
+        const pass = document.getElementById('reg-password').value;
+        const passConf = document.getElementById('reg-password-conf').value;
+
+        if (!name || !cpf || !phone || !birth || !email || !pass) {
+          showAlert('Por favor, preencha todos os campos obrigatórios da Etapa 1.');
+          return;
+        }
+
+        if (pass.length < 6) {
+          showAlert('A senha deve conter no mínimo 6 caracteres.');
+          return;
+        }
+
+        if (pass !== passConf) {
+          showAlert('A confirmação de senha não confere com a senha informada.');
+          return;
+        }
+
+        // Idade
+        const birthDate = new Date(birth);
+        const diff = Date.now() - birthDate.getTime();
+        const age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+        if (age < 18) {
+          showAlert('É necessário ter mais de 18 anos para se cadastrar.');
+          return;
+        }
+      }
+
+      if (currentStep === 2 && targetStep > 2) {
+        const cep = document.getElementById('reg-cep').value.trim();
+        const street = document.getElementById('reg-street').value.trim();
+        const number = document.getElementById('reg-number').value.trim();
+        const neighborhood = document.getElementById('reg-neighborhood').value.trim();
+        const city = document.getElementById('reg-city').value.trim();
+        const state = document.getElementById('reg-state').value.trim();
+
+        if (!cep || !street || !number || !neighborhood || !city || !state) {
+          showAlert('Por favor, preencha os dados de endereço obrigatórios.');
+          return;
+        }
+      }
+
+      goToStep(targetStep);
+    }
+
+    // Busca de CEP via ViaCEP
+    function buscarCep(cepRaw) {
+      const cep = cepRaw.replace(/\D/g, '');
+      if (cep.length !== 8) return;
+
+      const loader = document.getElementById('cepLoader');
+      loader.style.display = 'inline';
+
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          loader.style.display = 'none';
+          if (!data.erro) {
+            document.getElementById('reg-street').value = data.logradouro || '';
+            document.getElementById('reg-neighborhood').value = data.bairro || '';
+            document.getElementById('reg-city').value = data.localidade || 'Rio Claro';
+            document.getElementById('reg-state').value = data.uf || 'SP';
+            document.getElementById('reg-number').focus();
+          }
+        })
+        .catch(() => {
+          loader.style.display = 'none';
+        });
+    }
+
+    // Seleção de Planos e Métodos
+    function selectPlan(id) {
+      selectedPlanId = id;
+      document.getElementById('planCard1').classList.toggle('selected', id === 1);
+      document.getElementById('planCard2').classList.toggle('selected', id === 2);
+    }
+
+    function selectPayMethod(method) {
+      selectedPayment = method;
+      document.getElementById('payMethodPix').classList.toggle('selected', method === 'pix');
+      document.getElementById('payMethodCard').classList.toggle('selected', method === 'credit_card');
+      document.getElementById('payMethodBoleto').classList.toggle('selected', method === 'boleto');
+    }
+
+    // Força da Senha
+    function checkPassStrength(val) {
+      const bar = document.getElementById('strengthFill');
+      let score = 0;
+      if (val.length >= 6) score += 30;
+      if (val.length >= 8) score += 20;
+      if (/[A-Z]/.test(val)) score += 25;
+      if (/[0-9]/.test(val)) score += 25;
+
+      bar.style.width = `${score}%`;
+      if (score < 40) bar.style.background = '#ef4444';
+      else if (score < 75) bar.style.background = '#f59e0b';
+      else bar.style.background = '#10b981';
+    }
+
+    // Máscaras de Entrada
+    document.getElementById('reg-cpf').addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+      if (v.length > 9) v = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2})$/, "$1.$2.$3-$4");
+      else if (v.length > 6) v = v.replace(/^(\d{3})(\d{3})(\d{1,3})$/, "$1.$2.$3");
+      else if (v.length > 3) v = v.replace(/^(\d{3})(\d{1,3})$/, "$1.$2");
+      e.target.value = v;
+    });
+
+    document.getElementById('reg-phone').addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+      if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+      else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,5})$/, "($1) $2");
+      else if (v.length > 0) v = '(' + v;
+      e.target.value = v;
+    });
+
+    document.getElementById('reg-cep').addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').substring(0, 8);
+      if (v.length > 5) v = v.replace(/^(\d{5})(\d{1,3})$/, "$1-$2");
+      e.target.value = v;
+    });
+
+    document.getElementById('reg-plate').addEventListener('input', function(e) {
+      let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 7);
+      if (v.length > 3) v = v.substring(0, 3) + '-' + v.substring(3);
+      e.target.value = v;
+    });
+
+    // Submissão do Formulário Completo
+    function handleRegistrationSubmit(e) {
+      e.preventDefault();
+      clearAlert();
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.textContent = 'Processando cadastro...';
+
+      const payload = {
+        name: document.getElementById('reg-name').value.trim(),
+        cpf: document.getElementById('reg-cpf').value.trim(),
+        phone: document.getElementById('reg-phone').value.trim(),
+        birth_date: document.getElementById('reg-birth').value,
+        email: document.getElementById('reg-email').value.trim(),
+        password: document.getElementById('reg-password').value,
+        
+        // Endereço
+        zip_code: document.getElementById('reg-cep').value.trim(),
+        street: document.getElementById('reg-street').value.trim(),
+        number: document.getElementById('reg-number').value.trim(),
+        complement: document.getElementById('reg-complement').value.trim(),
+        neighborhood: document.getElementById('reg-neighborhood').value.trim(),
+        city: document.getElementById('reg-city').value.trim(),
+        state: document.getElementById('reg-state').value.trim(),
+
+        // Veículo & Plano
+        vehicle_model: document.getElementById('reg-model').value.trim(),
+        plate: document.getElementById('reg-plate').value.trim(),
+        plan_id: selectedPlanId,
+        payment_method: selectedPayment
+      };
+
+      fetch(`${API_URL}/api/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => { throw new Error(err.message || 'Erro ao realizar cadastro.') });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.status === 'ok') {
+          showAlert('Cadastro realizado com sucesso! Ativando o rastreador...', 'success');
+
+          // Salvar sessão no localStorage
+          localStorage.setItem('segcar_client_id', data.client.id);
+          localStorage.setItem('segcar_client_name', data.client.name);
+          localStorage.setItem('segcar_vehicle_model', data.client.vehicle_model || payload.vehicle_model);
+          localStorage.setItem('segcar_vehicle_plate', data.client.plate || payload.plate);
+          localStorage.setItem('segcar_client_phone', data.client.phone || payload.phone);
+          localStorage.setItem('segcar_device', data.client.device_id || 'veiculo_' + data.client.id);
+          localStorage.setItem('segcar_is_admin', 'false');
+
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.textContent = 'Concluir Cadastro e Ativar';
+        showAlert(err.message, 'error');
+      });
+    }
+  </script>
+
+</body>
+</html>

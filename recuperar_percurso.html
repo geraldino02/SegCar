@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SegCar — Recuperar Percurso</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: rgba(255,255,255,0.07);
+      --accent: #4f8ef7;
+      --accent2: #7c5cfc;
+      --green: #22c55e;
+      --red: #ef4444;
+      --orange: #f97316;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo svg { flex-shrink: 0; }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .controls label { font-size: 0.8rem; color: var(--muted); }
+
+    .controls input[type="text"],
+    .controls input[type="number"],
+    .controls select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 160px;
+    }
+    .controls input:focus, .controls select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-save {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Save Modal ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      width: 420px;
+      max-width: 90vw;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      transform: translateY(16px);
+      transition: transform 0.2s;
+    }
+    .modal-backdrop.open .modal {
+      transform: translateY(0);
+    }
+    .modal h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .modal p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .modal label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .modal input[type="text"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .modal input[type="text"]:focus {
+      border-color: var(--green);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-title {
+      padding: 14px 18px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .badge {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    /* Stats row */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-card {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 2px;
+      color: var(--text);
+    }
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.green  { color: var(--green);  }
+    .stat-value.orange { color: var(--orange); }
+
+    /* Points list */
+    .points-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .points-list::-webkit-scrollbar { width: 4px; }
+    .points-list::-webkit-scrollbar-track { background: transparent; }
+    .points-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .point-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border: 1px solid transparent;
+    }
+    .point-item:hover { background: var(--surface2); }
+    .point-item.selected { background: var(--surface2); border-color: var(--accent); }
+
+    .point-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .point-dot.start { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .point-dot.end   { background: var(--red);   box-shadow: 0 0 6px var(--red);   }
+    .point-dot.mid   { background: var(--accent); }
+
+    .point-info { flex: 1; min-width: 0; }
+    .point-seq {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .point-coords {
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .point-meta {
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .point-speed {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--orange);
+      flex-shrink: 0;
+    }
+
+    /* ── Map ── */
+    #map {
+      flex: 1;
+      position: relative;
+    }
+
+    /* Status toast */
+    #status-toast {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 10px 22px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    #status-toast.hidden { opacity: 0; }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Map info overlay */
+    .map-overlay {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 800;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 0.8rem;
+      min-width: 180px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .map-overlay-title {
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .map-overlay-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+    .map-overlay-row span:first-child { color: var(--muted); }
+    .map-overlay-row span:last-child  { font-weight: 600; }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+    }
+    .empty-state svg { opacity: 0.3; }
+    .empty-state p { font-size: 0.9rem; }
+
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="logo">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="url(#g1)" opacity="0.15"/>
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" fill="url(#g1)"/>
+      <defs>
+        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#4f8ef7"/>
+          <stop offset="100%" stop-color="#7c5cfc"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    SegCar — Recuperar Percurso
+  </div>
+
+  <div class="controls">
+    <label>Device ID</label>
+    <input type="text" id="device-id" value="veiculo_001" placeholder="veiculo_001" />
+
+    <label>Pontos (max)</label>
+    <input type="number" id="limit-input" value="1000" min="10" max="5000" step="10" style="width:90px" />
+
+    <button class="btn btn-primary" id="btn-load" onclick="loadHistory()">🔍 Carregar Percurso</button>
+    <button class="btn btn-save" id="btn-save" onclick="openSaveModal()" disabled>💾 Salvar nas Rotas</button>
+    <button class="btn btn-secondary" id="btn-export" onclick="exportGeoJSON()" disabled>⬇ Export GeoJSON</button>
+  </div>
+</header>
+
+<!-- ── Save Modal ── -->
+<div class="modal-backdrop" id="save-modal">
+  <div class="modal">
+    <h2>💾 Salvar nas Rotas</h2>
+    <p>O percurso recuperado será salvo como uma viagem no seu dashboard e aparecerá em <strong>Rotas Salvas</strong>.</p>
+    <label for="trip-name-input">Nome da viagem</label>
+    <input type="text" id="trip-name-input" placeholder="Ex: Percurso recuperado 21/08" maxlength="80" />
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeSaveModal()">Cancelar</button>
+      <button class="btn btn-save" id="btn-confirm-save" onclick="saveToTrips()">💾 Confirmar Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-title">
+      Pontos GPS
+      <span class="badge" id="points-badge">0</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Duração</div>
+        <div class="stat-value accent" id="stat-duration">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Distância</div>
+        <div class="stat-value green" id="stat-distance">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Vel. máx</div>
+        <div class="stat-value orange" id="stat-maxspeed">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Satélites</div>
+        <div class="stat-value" id="stat-sats">—</div>
+      </div>
+    </div>
+
+    <div class="points-list" id="points-list">
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#4f8ef7"/>
+        </svg>
+        <p>Clique em <strong>Carregar Percurso</strong><br/>para recuperar os dados da API.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Map -->
+  <div id="map">
+    <div class="map-overlay" id="map-info" style="display:none">
+      <div class="map-overlay-title">📍 Ponto Selecionado</div>
+      <div class="map-overlay-row"><span>Coord.</span><span id="ov-coord">—</span></div>
+      <div class="map-overlay-row"><span>Velocidade</span><span id="ov-speed">—</span></div>
+      <div class="map-overlay-row"><span>Satélites</span><span id="ov-sats">—</span></div>
+      <div class="map-overlay-row"><span>Horário</span><span id="ov-time">—</span></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="status-toast" class="hidden">
+    <div class="spinner" id="toast-spinner"></div>
+    <span id="toast-msg">Carregando...</span>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// ── Config ───────────────────────────────────────────────────
+const API_BASE = 'http://localhost/segcar/sketch_jul12a/api/public/index.php';
+
+// ── Map init ─────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true }).setView([-22.37, -47.57], 15);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  subdomains: 'abc',
+  maxZoom: 19,
+}).addTo(map);
+if (map.getPane('tilePane')) {
+  map.getPane('tilePane').style.filter = 'brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)';
+}
+
+// ── State ────────────────────────────────────────────────────
+let allPoints = [];
+let polyline  = null;
+let markers   = [];
+let selectedIdx = -1;
+
+// ── Toast helpers ────────────────────────────────────────────
+function showToast(msg, spinner = true) {
+  const t = document.getElementById('status-toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-spinner').style.display = spinner ? 'block' : 'none';
+  t.classList.remove('hidden');
+}
+function hideToast() {
+  document.getElementById('status-toast').classList.add('hidden');
+}
+
+// ── Haversine distance (m) ────────────────────────────────────
+function haversine(a, b) {
+  const R = 6371000;
+  const dLat = (b.lat - a.lat) * Math.PI / 180;
+  const dLon = (b.lng - a.lng) * Math.PI / 180;
+  const aa = Math.sin(dLat/2)**2 +
+             Math.cos(a.lat * Math.PI/180) * Math.cos(b.lat * Math.PI/180) *
+             Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1 - aa));
+}
+
+// ── Format helpers ────────────────────────────────────────────
+function fmtDuration(sec) {
+  if (!sec || sec < 0) return '—';
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return h > 0
+    ? `${h}h ${m}m ${s}s`
+    : m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+function fmtDist(m) {
+  return m >= 1000 ? `${(m/1000).toFixed(2)} km` : `${Math.round(m)} m`;
+}
+function fmtTime(str) {
+  if (!str) return '—';
+  try {
+    return new Date(str).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  } catch { return str; }
+}
+
+// ── Load history ─────────────────────────────────────────────
+async function loadHistory() {
+  const deviceId = document.getElementById('device-id').value.trim() || 'veiculo_001';
+  const limit    = parseInt(document.getElementById('limit-input').value) || 1000;
+
+  showToast('Buscando dados na API…');
+  document.getElementById('btn-load').disabled = true;
+
+  try {
+    const url = `${API_BASE}?${new URLSearchParams({
+      path: '/api/history', // não usado, mas documentado
+    })}`;
+
+    // A API usa path info, então montamos a URL correta:
+    const res = await fetch(
+      `${API_BASE}/api/history?device_id=${encodeURIComponent(deviceId)}&limit=${limit}`
+        .replace('/index.php/api/', '/index.php?route=api/')
+    );
+
+    // Tentar URL direta (PATH_INFO)
+    let data = null;
+    const attempts = [
+      `${API_BASE}/api/history?device_id=${encodeURIComponent(deviceId)}&limit=${limit}`,
+      `http://localhost/segcar/sketch_jul12a/api/public/index.php/api/history?device_id=${encodeURIComponent(deviceId)}&limit=${limit}`,
+      `http://localhost/segcar/sketch_jul12a/api/public/?path=/api/history&device_id=${encodeURIComponent(deviceId)}&limit=${limit}`,
+    ];
+
+    for (const attempt of attempts) {
+      try {
+        const r = await fetch(attempt);
+        if (r.ok) {
+          const j = await r.json();
+          if (j.status === 'ok') { data = j; break; }
+        }
+      } catch { /* continua */ }
+    }
+
+    if (!data) throw new Error('Não foi possível conectar à API. Verifique se o XAMPP está rodando.');
+
+    const items = (data.items || []).reverse(); // mais antigo primeiro
+    if (items.length === 0) throw new Error('Nenhum ponto encontrado para este dispositivo.');
+
+    renderTrack(items, deviceId);
+    showToast(`✅ ${items.length} pontos carregados!`, false);
+    setTimeout(hideToast, 3000);
+    document.getElementById('btn-export').disabled = false;
+    document.getElementById('btn-save').disabled = false;
+
+  } catch (err) {
+    showToast(`❌ ${err.message}`, false);
+    setTimeout(hideToast, 6000);
+  } finally {
+    document.getElementById('btn-load').disabled = false;
+  }
+}
+
+// ── Render track ─────────────────────────────────────────────
+function renderTrack(items, deviceId) {
+  // Limpar estado anterior
+  if (polyline) { map.removeLayer(polyline); polyline = null; }
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  allPoints = [];
+
+  // Converter para formato interno
+  allPoints = items.map((item, i) => ({
+    idx:     i,
+    lat:     item.latitude,
+    lng:     item.longitude,
+    speed:   item.velocidade_kmh ?? 0,
+    sats:    item.satelites ?? 0,
+    time:    item.received_at || item.gps_timestamp_utc || '',
+    raw:     item,
+  }));
+
+  if (allPoints.length === 0) return;
+
+  // ── Polilinha ───
+  const latlngs = allPoints.map(p => [p.lat, p.lng]);
+  polyline = L.polyline(latlngs, {
+    color: '#4f8ef7',
+    weight: 3,
+    opacity: 0.85,
+  }).addTo(map);
+
+  // ── Marcador de início ───
+  const startIcon = L.divIcon({
+    html: `<div style="
+      width:14px;height:14px;border-radius:50%;
+      background:#22c55e;border:3px solid #fff;
+      box-shadow:0 0 8px #22c55e;"></div>`,
+    className: '',
+    iconSize: [14,14],
+    iconAnchor: [7,7],
+  });
+  const endIcon = L.divIcon({
+    html: `<div style="
+      width:14px;height:14px;border-radius:50%;
+      background:#ef4444;border:3px solid #fff;
+      box-shadow:0 0 8px #ef4444;"></div>`,
+    className: '',
+    iconSize: [14,14],
+    iconAnchor: [7,7],
+  });
+
+  const first = allPoints[0];
+  const last  = allPoints[allPoints.length - 1];
+
+  L.marker([first.lat, first.lng], {icon: startIcon})
+    .bindTooltip('🟢 Início', {permanent: false})
+    .addTo(map);
+  L.marker([last.lat, last.lng], {icon: endIcon})
+    .bindTooltip('🔴 Fim', {permanent: false})
+    .addTo(map);
+
+  // ── Fit map ───
+  map.fitBounds(polyline.getBounds(), {padding: [40, 40]});
+
+  // ── Stats ───
+  let totalDist = 0;
+  for (let i = 1; i < allPoints.length; i++) {
+    totalDist += haversine(allPoints[i-1], allPoints[i]);
+  }
+  const maxSpeed = Math.max(...allPoints.map(p => p.speed));
+  const avgSats  = Math.round(allPoints.reduce((s, p) => s + p.sats, 0) / allPoints.length);
+
+  // Duração entre primeiro e último received_at
+  let durationSec = 0;
+  if (first.time && last.time) {
+    durationSec = Math.round((new Date(last.time) - new Date(first.time)) / 1000);
+  }
+
+  document.getElementById('stat-duration').textContent  = fmtDuration(durationSec);
+  document.getElementById('stat-distance').textContent  = fmtDist(totalDist);
+  document.getElementById('stat-maxspeed').textContent  = `${maxSpeed.toFixed(1)} km/h`;
+  document.getElementById('stat-sats').textContent      = `${avgSats} avg`;
+  document.getElementById('points-badge').textContent   = allPoints.length;
+
+  // ── Sidebar list ───
+  renderSidebarList(allPoints);
+}
+
+// ── Sidebar list ─────────────────────────────────────────────
+function renderSidebarList(points) {
+  const list = document.getElementById('points-list');
+  list.innerHTML = '';
+
+  // Apenas uma amostra de pontos (para não travar o DOM)
+  const stride = Math.max(1, Math.floor(points.length / 200));
+
+  points.forEach((p, i) => {
+    if (i % stride !== 0 && i !== 0 && i !== points.length - 1) return;
+
+    const isStart = i === 0;
+    const isEnd   = i === points.length - 1;
+
+    const el = document.createElement('div');
+    el.className = 'point-item';
+    el.dataset.idx = i;
+
+    const dotClass = isStart ? 'start' : isEnd ? 'end' : 'mid';
+    el.innerHTML = `
+      <div class="point-dot ${dotClass}"></div>
+      <div class="point-info">
+        <div class="point-seq">#${i + 1} ${isStart ? '· Início' : isEnd ? '· Fim' : ''}</div>
+        <div class="point-coords">${p.lat.toFixed(6)}, ${p.lng.toFixed(6)}</div>
+        <div class="point-meta">${fmtTime(p.time)}</div>
+      </div>
+      <div class="point-speed">${p.speed.toFixed(1)} km/h</div>
+    `;
+
+    el.addEventListener('click', () => selectPoint(i, el));
+    list.appendChild(el);
+  });
+}
+
+// ── Select point ─────────────────────────────────────────────
+function selectPoint(idx, el) {
+  document.querySelectorAll('.point-item.selected').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedIdx = idx;
+
+  const p = allPoints[idx];
+  map.setView([p.lat, p.lng], Math.max(map.getZoom(), 16), {animate: true});
+
+  // Update overlay
+  const ov = document.getElementById('map-info');
+  ov.style.display = 'block';
+  document.getElementById('ov-coord').textContent  = `${p.lat.toFixed(6)}, ${p.lng.toFixed(6)}`;
+  document.getElementById('ov-speed').textContent  = `${p.speed.toFixed(1)} km/h`;
+  document.getElementById('ov-sats').textContent   = `${p.sats} satélites`;
+  document.getElementById('ov-time').textContent   = fmtTime(p.time);
+}
+
+// ── Save Modal ───────────────────────────────────────────────
+function openSaveModal() {
+  if (allPoints.length === 0) return;
+  const deviceId = document.getElementById('device-id').value.trim() || 'veiculo_001';
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('pt-BR');
+  const timeStr = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('trip-name-input').value = `Percurso recuperado ${deviceId} — ${dateStr} ${timeStr}`;
+  document.getElementById('save-modal').classList.add('open');
+  setTimeout(() => document.getElementById('trip-name-input').select(), 200);
+}
+
+function closeSaveModal() {
+  document.getElementById('save-modal').classList.remove('open');
+}
+
+async function saveToTrips() {
+  if (allPoints.length === 0) return;
+
+  const tripName = document.getElementById('trip-name-input').value.trim();
+  if (!tripName) {
+    document.getElementById('trip-name-input').focus();
+    return;
+  }
+
+  const btn = document.getElementById('btn-confirm-save');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  const deviceId  = document.getElementById('device-id').value.trim() || 'veiculo_001';
+  const first     = allPoints[0];
+  const last      = allPoints[allPoints.length - 1];
+
+  // Calcular distância total
+  let totalDistM = 0;
+  for (let i = 1; i < allPoints.length; i++) {
+    totalDistM += haversine(allPoints[i-1], allPoints[i]);
+  }
+
+  const maxSpeed  = Math.max(...allPoints.map(p => p.speed));
+  const avgSpeed  = allPoints.reduce((s, p) => s + p.speed, 0) / allPoints.length;
+  const durationSec = (first.time && last.time)
+    ? Math.round((new Date(last.time) - new Date(first.time)) / 1000)
+    : 0;
+
+  const startTime = first.time
+    ? new Date(first.time).toISOString().slice(0, 19).replace('T', ' ')
+    : new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const endTime = last.time
+    ? new Date(last.time).toISOString().slice(0, 19).replace('T', ' ')
+    : new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+  // Montar posições no formato que o dashboard espera
+  const positions = allPoints.map(p => ({
+    latitude:       p.lat,
+    longitude:      p.lng,
+    velocidade_kmh: p.speed,
+    satelites:      p.sats,
+    hdop:           p.raw.hdop ?? 1.0,
+    altitude_m:     p.raw.altitude_m ?? null,
+    received_at:    p.time || new Date().toISOString(),
+  }));
+
+  const payload = {
+    device_id:        deviceId,
+    client_id:        parseInt(localStorage.getItem('segcar_client_id') || '1'),
+    name:             tripName,
+    origin_name:      null,
+    destination_name: null,
+    start_time:       startTime,
+    end_time:         endTime,
+    total_distance_m: Math.round(totalDistM),
+    duration_seconds: durationSec,
+    avg_speed_kmh:    Math.round(avgSpeed * 10) / 10,
+    max_speed_kmh:    Math.round(maxSpeed * 10) / 10,
+    positions,
+  };
+
+  try {
+    // Tentar as mesmas URLs da loadHistory
+    const apiBase = localStorage.getItem('segcar_url')
+      || 'http://localhost/segcar/sketch_jul12a/api/public/index.php';
+
+    const urls = [
+      `${apiBase}/api/trips`,
+      'http://localhost/segcar/sketch_jul12a/api/public/index.php/api/trips',
+    ];
+
+    let saved = false;
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'ok') {
+            saved = true;
+            showToast(`✅ Rota "${tripName}" salva! Abra o dashboard para ver.`, false);
+            setTimeout(hideToast, 5000);
+            closeSaveModal();
+            break;
+          }
+        }
+      } catch { /* continua */ }
+    }
+
+    if (!saved) throw new Error('A API não conseguiu salvar a viagem.');
+
+  } catch (err) {
+    showToast(`❌ ${err.message}`, false);
+    setTimeout(hideToast, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Confirmar Salvar';
+  }
+}
+
+// ── Export GeoJSON ────────────────────────────────────────────
+function exportGeoJSON() {
+  if (allPoints.length === 0) return;
+  const geojson = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: allPoints.map(p => [p.lng, p.lat]),
+        },
+        properties: {
+          device_id: document.getElementById('device-id').value,
+          points: allPoints.length,
+          exported_at: new Date().toISOString(),
+        },
+      },
+      ...allPoints.map((p, i) => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
+        properties: {
+          seq: i + 1,
+          speed_kmh: p.speed,
+          satellites: p.sats,
+          time: p.time,
+        },
+      })),
+    ],
+  };
+
+  const blob = new Blob([JSON.stringify(geojson, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `percurso_${document.getElementById('device-id').value}_${Date.now()}.geojson`;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 1000);
+}
+
+// ── Close modal on backdrop click ────────────────────────────
+document.getElementById('save-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('save-modal')) closeSaveModal();
+});
+
+// ── Close modal on Escape ─────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSaveModal();
+});
+
+// ── Save on Enter inside modal input ─────────────────────────
+document.getElementById('trip-name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveToTrips();
+});
+
+// ── Auto-load on Enter ────────────────────────────────────────
+document.getElementById('device-id').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadHistory();
+});
+
+// ── Init ──────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  // Tenta carregar automaticamente
+  setTimeout(loadHistory, 300);
+});
+</script>
+</body>
+</html>

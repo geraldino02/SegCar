@@ -1,0 +1,10 @@
+{
+  "device_id": "veiculo_001",
+  "latitude": -23.55052,
+  "longitude": -46.633308,
+  "velocidade_kmh": 42.5,
+  "altitude_m": 760.2,
+  "satelites": 8,
+  "data_utc": "12/07/2026",
+  "hora_utc": "14:32:10"
+}

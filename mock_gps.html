@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de GPS - SegCar</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155; }
+    h1 { margin-top: 0; color: #3b82f6; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; color: #cbd5e1; font-size: 0.9em; }
+    input[type="text"], input[type="number"] { width: 100%; padding: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; border-radius: 4px; box-sizing: border-box; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; }
+    button:hover { background: #2563eb; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    button.stop { background: #ef4444; }
+    button.stop:hover { background: #dc2626; }
+    .log-window { background: #000; color: #10b981; font-family: monospace; padding: 10px; height: 200px; overflow-y: auto; border-radius: 4px; font-size: 0.85em; margin-top: 20px;}
+    .log-window div { margin-bottom: 3px; border-bottom: 1px solid #222; padding-bottom: 3px; }
+    #map-picker { height: 300px; width: 100%; border-radius: 4px; margin-bottom: 20px; border: 1px solid #475569; z-index: 1; }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h1>Simulador de Rotas (Mock GPS)</h1>
+  <p>Gere coordenadas fictícias a partir da sua casa até um destino para testar o SegCar em tempo real.</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <div class="form-group">
+      <label>URL da API</label>
+      <!-- Altere localhost para o IP ou domínio que está usando -->
+      <input type="text" id="apiUrl" value="http://localhost/segcar/sketch_jul12a/api/public/index.php/api/gps">
+    </div>
+    <div class="form-group">
+      <label>API Key</label>
+      <input type="text" id="apiKey" value="troque-esta-chave-secreta">
+    </div>
+    <div class="form-group">
+      <label>Device ID</label>
+      <input type="text" id="deviceId" value="veiculo_001">
+    </div>
+    <div class="form-group">
+      <label>Intervalo (ms)</label>
+      <input type="number" id="intervalMs" value="3000">
+    </div>
+  </div>
+
+  <hr style="border-color: #334155; margin: 20px 0;">
+
+  <p style="font-size: 0.9em; color: #94a3b8; margin-bottom: 5px;">Arraste os marcadores no mapa para definir a Origem (Verde) e Destino (Vermelho).</p>
+  <div id="map-picker"></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <div class="form-group">
+      <label>Origem (Casa - Floridiana) - Lat</label>
+      <input type="text" id="homeLat" value="-22.383120">
+    </div>
+    <div class="form-group">
+      <label>Origem (Casa - Floridiana) - Lng</label>
+      <input type="text" id="homeLng" value="-47.551840">
+    </div>
+    <div class="form-group">
+      <label>Destino (Centro Rio Claro) - Lat</label>
+      <input type="text" id="destLat" value="-22.413720">
+    </div>
+    <div class="form-group">
+      <label>Destino (Centro Rio Claro) - Lng</label>
+      <input type="text" id="destLng" value="-47.564550">
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+    <button type="button" onclick="setPresetUnipLimeira()" style="background: #0ea5e9; width: auto; flex: 1; margin-bottom: 0;">📍 Ponto: UNIP Limeira</button>
+  </div>
+
+  <button id="btnStart" onclick="startSimulation()">Iniciar Viagem Simulada</button>
+  <button id="btnStop" class="stop" onclick="stopSimulation()" disabled>Parar Simulação</button>
+
+  <div class="log-window" id="logWindow">
+    <div>[Sistema] Rio Claro-SP configurado. Clique em Iniciar.</div>
+  </div>
+</div>
+
+<script>
+  // Inicializar o mapa em Rio Claro - SP
+  const map = L.map('map-picker').setView([-22.4000, -47.5550], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: 'abc',
+    maxZoom: 19
+  }).addTo(map);
+  if (map.getPane('tilePane')) {
+    map.getPane('tilePane').style.filter = 'brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)';
+  }
+
+  // Ícones customizados
+  const homeIcon = L.divIcon({ className: 'custom-icon', html: '<div style="background:#10b981; width:16px; height:16px; border-radius:50%; border:2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
+  const destIcon = L.divIcon({ className: 'custom-icon', html: '<div style="background:#ef4444; width:16px; height:16px; border-radius:50%; border:2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
+
+  let homeMarker = L.marker([-22.383120, -47.551840], { draggable: true, icon: homeIcon }).addTo(map).bindPopup("Origem (Floridiana)");
+  let destMarker = L.marker([-22.413720, -47.564550], { draggable: true, icon: destIcon }).addTo(map).bindPopup("Destino (Centro)");
+
+  function updateInputsFromMarkers() {
+    document.getElementById('homeLat').value = homeMarker.getLatLng().lat.toFixed(6);
+    document.getElementById('homeLng').value = homeMarker.getLatLng().lng.toFixed(6);
+    document.getElementById('destLat').value = destMarker.getLatLng().lat.toFixed(6);
+    document.getElementById('destLng').value = destMarker.getLatLng().lng.toFixed(6);
+  }
+
+  homeMarker.on('dragend', updateInputsFromMarkers);
+  destMarker.on('dragend', updateInputsFromMarkers);
+
+  function updateMarkersFromInputs() {
+    const hl = parseFloat(document.getElementById('homeLat').value);
+    const hln = parseFloat(document.getElementById('homeLng').value);
+    const dl = parseFloat(document.getElementById('destLat').value);
+    const dln = parseFloat(document.getElementById('destLng').value);
+    
+    if(!isNaN(hl) && !isNaN(hln)) homeMarker.setLatLng([hl, hln]);
+    if(!isNaN(dl) && !isNaN(dln)) destMarker.setLatLng([dl, dln]);
+  }
+
+  document.getElementById('homeLat').addEventListener('input', updateMarkersFromInputs);
+  document.getElementById('homeLng').addEventListener('input', updateMarkersFromInputs);
+  document.getElementById('destLat').addEventListener('input', updateMarkersFromInputs);
+  document.getElementById('destLng').addEventListener('input', updateMarkersFromInputs);
+
+  function setPresetUnipLimeira() {
+    const lat = -22.544885;
+    const lng = -47.378445;
+    homeMarker.setLatLng([lat, lng]);
+    destMarker.setLatLng([-22.540000, -47.380000]);
+    map.setView([lat, lng], 16);
+    updateInputsFromMarkers();
+    logMsg("Coordenadas definidas para o Campus da UNIP Limeira (-22.544885, -47.378445)");
+  }
+
+  let intervalId = null;
+  let currentLat = 0;
+  let currentLng = 0;
+  let destLat = 0;
+  let destLng = 0;
+  let stepsTotal = 0;
+  let currentStep = 0;
+
+  function logMsg(msg) {
+    const lw = document.getElementById('logWindow');
+    const time = new Date().toLocaleTimeString();
+    lw.innerHTML += `<div>[${time}] ${msg}</div>`;
+    lw.scrollTop = lw.scrollHeight;
+  }
+
+  function startSimulation() {
+    const homeLat = parseFloat(document.getElementById('homeLat').value);
+    const homeLng = parseFloat(document.getElementById('homeLng').value);
+    destLat = parseFloat(document.getElementById('destLat').value);
+    destLng = parseFloat(document.getElementById('destLng').value);
+    const intervalMs = parseInt(document.getElementById('intervalMs').value);
+
+    if (isNaN(homeLat) || isNaN(homeLng) || isNaN(destLat) || isNaN(destLng)) {
+      alert("Coordenadas inválidas!");
+      return;
+    }
+
+    currentLat = homeLat;
+    currentLng = homeLng;
+
+    // Aproximadamente 150 atualizações até chegar ao destino
+    stepsTotal = 150; 
+    currentStep = 0;
+
+    document.getElementById('btnStart').disabled = true;
+    document.getElementById('btnStop').disabled = false;
+    logMsg("Calculando rota interpolada...");
+
+    intervalId = setInterval(sendNextPoint, intervalMs);
+    sendNextPoint(); // Envia o ponto 0 imediatamente
+  }
+
+  function stopSimulation() {
+    if (intervalId) clearInterval(intervalId);
+    document.getElementById('btnStart').disabled = false;
+    document.getElementById('btnStop').disabled = true;
+    logMsg("Simulação interrompida.");
+  }
+
+  function pad(n) { return n < 10 ? '0' + n : n; }
+
+  async function sendNextPoint() {
+    if (currentStep > stepsTotal) {
+      logMsg("Chegou ao destino!");
+      stopSimulation();
+      return;
+    }
+
+    // Interpolação linear da origem ao destino
+    const progress = currentStep / stepsTotal;
+    const lat = currentLat + (destLat - currentLat) * progress;
+    const lng = currentLng + (destLng - currentLng) * progress;
+
+    // Adiciona pequeno ruído para simular erro natural de GPS
+    const noiseLat = (Math.random() - 0.5) * 0.0001;
+    const noiseLng = (Math.random() - 0.5) * 0.0001;
+
+    const finalLat = lat + noiseLat;
+    const finalLng = lng + noiseLng;
+
+    // Simula telemetria
+    const speed = 30 + Math.random() * 30; // 30 a 60 km/h
+    const sats = Math.floor(Math.random() * 5) + 6; // 6 a 10 satélites
+    const altitude = 750 + Math.random() * 20;
+
+    // Formata Data/Hora UTC conforme exigido pela API (DD/MM/AAAA)
+    const now = new Date();
+    const d = now.getUTCDate();
+    const mo = now.getUTCMonth() + 1;
+    const y = now.getUTCFullYear();
+    const dataUtc = `${pad(d)}/${pad(mo)}/${y}`;
+    const horaUtc = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+
+    const payload = {
+      device_id: document.getElementById('deviceId').value,
+      latitude: finalLat,
+      longitude: finalLng,
+      velocidade_kmh: speed.toFixed(1),
+      altitude_m: altitude.toFixed(1),
+      satelites: sats,
+      data_utc: dataUtc,
+      hora_utc: horaUtc
+    };
+
+    const apiUrl = document.getElementById('apiUrl').value;
+    const apiKey = document.getElementById('apiKey').value;
+
+    try {
+      logMsg(`Enviando POST: Lat ${finalLat.toFixed(5)}, Lng ${finalLng.toFixed(5)}`);
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        logMsg(`ERRO da API: HTTP ${response.status}`);
+      } else {
+        const json = await response.json();
+        logMsg(`SUCESSO: Posição salva no banco.`);
+      }
+    } catch (err) {
+      logMsg(`FALHA de rede: ${err.message}`);
+    }
+
+    currentStep++;
+  }
+</script>
+</body>
+</html>
