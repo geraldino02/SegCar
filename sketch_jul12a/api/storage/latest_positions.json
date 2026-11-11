@@ -1,16 +1,16 @@
 {
     "veiculo_001": {
         "device_id": "veiculo_001",
-        "latitude": -22.371665,
-        "longitude": -47.575134,
+        "latitude": -22.544885,
+        "longitude": -47.378445,
         "velocidade_kmh": 0,
-        "altitude_m": 608.6,
-        "satelites": 5,
-        "hdop": 2.1,
-        "data_utc": "09/11/2026",
-        "hora_utc": "22:26:57",
-        "gps_timestamp_utc": "2026-11-09T22:26:57+00:00",
-        "received_at": "2026-11-09 19:26:58",
+        "altitude_m": 643.0,
+        "satelites": 10,
+        "hdop": 0.9,
+        "data_utc": "11/11/2026",
+        "hora_utc": "12:00:00",
+        "gps_timestamp_utc": "2026-11-11T12:00:00+00:00",
+        "received_at": "2026-11-11 12:00:00",
         "status": "ativo"
     }
 }

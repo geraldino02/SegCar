@@ -55,20 +55,20 @@
 
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
     <div class="form-group">
-      <label>Origem (Casa - Floridiana) - Lat</label>
-      <input type="text" id="homeLat" value="-22.383120">
+      <label>Origem (Campus UNIP) - Lat</label>
+      <input type="text" id="homeLat" value="-22.544885">
     </div>
     <div class="form-group">
-      <label>Origem (Casa - Floridiana) - Lng</label>
-      <input type="text" id="homeLng" value="-47.551840">
+      <label>Origem (Campus UNIP) - Lng</label>
+      <input type="text" id="homeLng" value="-47.378445">
     </div>
     <div class="form-group">
-      <label>Destino (Centro Rio Claro) - Lat</label>
-      <input type="text" id="destLat" value="-22.413720">
+      <label>Destino (Portaria UNIP) - Lat</label>
+      <input type="text" id="destLat" value="-22.541200">
     </div>
     <div class="form-group">
-      <label>Destino (Centro Rio Claro) - Lng</label>
-      <input type="text" id="destLng" value="-47.564550">
+      <label>Destino (Portaria UNIP) - Lng</label>
+      <input type="text" id="destLng" value="-47.376800">
     </div>
   </div>
 
@@ -80,13 +80,13 @@
   <button id="btnStop" class="stop" onclick="stopSimulation()" disabled>Parar Simulação</button>
 
   <div class="log-window" id="logWindow">
-    <div>[Sistema] Rio Claro-SP configurado. Clique em Iniciar.</div>
+    <div>[Sistema] Campus UNIP configurado. Clique em Iniciar.</div>
   </div>
 </div>
 
 <script>
-  // Inicializar o mapa em Rio Claro - SP
-  const map = L.map('map-picker').setView([-22.4000, -47.5550], 13);
+  // Inicializar o mapa na UNIP
+  const map = L.map('map-picker').setView([-22.544885, -47.378445], 16);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     subdomains: 'abc',
@@ -100,8 +100,8 @@
   const homeIcon = L.divIcon({ className: 'custom-icon', html: '<div style="background:#10b981; width:16px; height:16px; border-radius:50%; border:2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
   const destIcon = L.divIcon({ className: 'custom-icon', html: '<div style="background:#ef4444; width:16px; height:16px; border-radius:50%; border:2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
 
-  let homeMarker = L.marker([-22.383120, -47.551840], { draggable: true, icon: homeIcon }).addTo(map).bindPopup("Origem (Floridiana)");
-  let destMarker = L.marker([-22.413720, -47.564550], { draggable: true, icon: destIcon }).addTo(map).bindPopup("Destino (Centro)");
+  let homeMarker = L.marker([-22.544885, -47.378445], { draggable: true, icon: homeIcon }).addTo(map).bindPopup("Origem (Campus UNIP)");
+  let destMarker = L.marker([-22.541200, -47.376800], { draggable: true, icon: destIcon }).addTo(map).bindPopup("Destino (Portaria UNIP)");
 
   function updateInputsFromMarkers() {
     document.getElementById('homeLat').value = homeMarker.getLatLng().lat.toFixed(6);

@@ -233,7 +233,7 @@
 
           <div class="topbar-screen-info">
             <div class="topbar-title" id="screenTitle">Mapa & Rastreamento Ao Vivo</div>
-            <div class="topbar-sub" id="screenSubtitle">Monitoramento de telemetria em tempo real em Rio Claro-SP</div>
+            <div class="topbar-sub" id="screenSubtitle">Monitoramento de telemetria em tempo real - UNIP</div>
           </div>
         </div>
 
@@ -302,7 +302,7 @@
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                   </svg>
-                  <span id="hud-home-text">Em Casa (Perímetro Seguro)</span>
+                  <span id="hud-home-text">Na UNIP (Perímetro Seguro)</span>
                 </div>
               </div>
             </div>
@@ -465,7 +465,7 @@
                   <span class="kpi-number" id="val-alt">612</span>
                   <span class="kpi-unit">metros</span>
                 </div>
-                <div class="kpi-subtext">Nível do solo em Rio Claro-SP</div>
+                <div class="kpi-subtext">Nível do solo no Campus UNIP</div>
               </div>
 
               <!-- Satélites -->
@@ -512,11 +512,11 @@
                 <div class="coord-tiles-row">
                   <div class="coord-tile">
                     <span class="coord-tile-label">LATITUDE</span>
-                    <span class="coord-tile-val" id="val-lat">-22.383120</span>
+                    <span class="coord-tile-val" id="val-lat">-22.544885</span>
                   </div>
                   <div class="coord-tile">
                     <span class="coord-tile-label">LONGITUDE</span>
-                    <span class="coord-tile-val" id="val-lng">-47.551840</span>
+                    <span class="coord-tile-val" id="val-lng">-47.378445</span>
                   </div>
                 </div>
 
@@ -538,8 +538,8 @@
                     </svg>
                   </div>
                   <div class="home-text">
-                    Veículo no perímetro seguro (Casa)
-                    <small id="home-detail">Dentro do raio de cerca configurado em Rio Claro-SP.</small>
+                    Veículo no perímetro seguro (UNIP)
+                    <small id="home-detail">Dentro do raio de cerca configurado no campus UNIP.</small>
                   </div>
                 </div>
               </div>
@@ -626,7 +626,7 @@
                 <span class="trip-sum-label">Quilometragem Total</span>
               </div>
               <div class="trip-summary-item">
-                <span class="trip-sum-number">Rio Claro-SP</span>
+                <span class="trip-sum-number">UNIP</span>
                 <span class="trip-sum-label">Região Operacional</span>
               </div>
             </div>
@@ -708,7 +708,7 @@
                   </div>
                   <div class="info-row">
                     <span class="info-label">Cidade Base</span>
-                    <span class="info-val">Rio Claro - SP</span>
+                    <span class="info-val">Limeira - SP (UNIP)</span>
                   </div>
                 </div>
               </div>
@@ -747,8 +747,8 @@
                 </div>
 
                 <div class="address-display-box" id="acc-address-box">
-                  <div class="address-street" id="acc-street">Rua 3, 1200 - Centro</div>
-                  <div class="address-details" id="acc-neighborhood-city">Rio Claro - SP • CEP: 13500-000</div>
+                  <div class="address-street" id="acc-street">Rua Pedro Zaccaria, 1100</div>
+                  <div class="address-details" id="acc-neighborhood-city">Campus UNIP • Limeira - SP • CEP: 13484-350</div>
                 </div>
               </div>
 
@@ -785,7 +785,7 @@
             <div class="screen-hero-header">
               <div>
                 <h2 class="section-heading">Cerca Virtual & Configurações do Sistema</h2>
-                <p class="section-description">Ajuste os parâmetros da cerca eletrônica em Rio Claro e chaves de
+                <p class="section-description">Ajuste os parâmetros da cerca eletrônica na UNIP e chaves de
                   integração da API.</p>
               </div>
               <button class="btn-primary" onclick="saveConfig()">
@@ -798,7 +798,7 @@
               <!-- Cerca Virtual -->
               <div class="card-box">
                 <div class="card-box-header">
-                  <div class="card-box-title">Cerca Virtual (Perímetro da Casa)</div>
+                  <div class="card-box-title">Cerca Virtual (Perímetro UNIP)</div>
                 </div>
                 <p style="font-size:0.85rem; color: var(--text-3); margin-bottom: 1.25rem;">
                   Quando o veículo sai desta coordenada além do raio em metros, o sistema dispara alertas imediatos no
@@ -806,13 +806,13 @@
                 </p>
 
                 <div class="config-field">
-                  <label for="cfg-home-lat">Latitude Central da Casa</label>
-                  <input id="cfg-home-lat" type="text" placeholder="Ex: -22.383120" />
+                  <label for="cfg-home-lat">Latitude Central (UNIP)</label>
+                  <input id="cfg-home-lat" type="text" placeholder="Ex: -22.544885" />
                 </div>
 
                 <div class="config-field">
-                  <label for="cfg-home-lng">Longitude Central da Casa</label>
-                  <input id="cfg-home-lng" type="text" placeholder="Ex: -47.551840" />
+                  <label for="cfg-home-lng">Longitude Central (UNIP)</label>
+                  <input id="cfg-home-lng" type="text" placeholder="Ex: -47.378445" />
                 </div>
 
                 <div class="config-field">

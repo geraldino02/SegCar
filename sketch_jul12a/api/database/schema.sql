@@ -1,7 +1,7 @@
 -- =============================================================================
 -- SegCar - Schema do Banco de Dados MySQL Completo e Escalável
 -- Inclui: Clientes, Endereços, Dispositivos, Telemetria, Planos, Assinaturas e Pagamentos
--- Rotas seguindo as ruas reais de Rio Claro-SP
+-- Rotas de demonstracao no Campus da UNIP
 -- =============================================================================
 
 CREATE DATABASE IF NOT EXISTS segcar_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS addresses (
     number VARCHAR(20) NOT NULL,
     complement VARCHAR(100) NULL,
     neighborhood VARCHAR(100) NOT NULL,
-    city VARCHAR(100) NOT NULL DEFAULT 'Rio Claro',
+    city VARCHAR(100) NOT NULL DEFAULT 'Limeira',
     state VARCHAR(2) NOT NULL DEFAULT 'SP',
     is_primary TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -164,7 +164,7 @@ VALUES
 (2, 'Administrador SegCar', 'admin@segcar.com', '(19) 99999-9999', '000.000.000-00', '1985-01-01', 41, '$2y$12$5ALo/Uj/VuAUzGVx7GCYf.JnLiqaQPTFpoBFBbFkPIhpXpeUsuqLy', 'admin');
 
 INSERT INTO addresses (id, client_id, zip_code, street, number, complement, neighborhood, city, state, is_primary)
-VALUES (1, 1, '13500-000', 'Avenida Visconde de Rio Claro', '1500', 'Apto 42', 'Centro', 'Rio Claro', 'SP', 1)
+VALUES (1, 1, '13484-350', 'Rua Pedro Zaccaria', '1100', 'Bloco A', 'Campus UNIP', 'Limeira', 'SP', 1)
 ON DUPLICATE KEY UPDATE street = VALUES(street), zip_code = VALUES(zip_code);
 
 INSERT INTO devices (id, client_id, device_id, api_key, vehicle_model, plate, active)
@@ -191,31 +191,19 @@ DELETE FROM gps_positions WHERE device_id = 'veiculo_001';
 DELETE FROM trips WHERE device_id = 'veiculo_001';
 
 -- -----------------------------------------------------------------------------
--- ROTA 1: Jardim Floridiana para Centro (Av. Brasil e Av. Visconde de Rio Claro)
+-- ROTA 1: Circuito Campus UNIP
 -- -----------------------------------------------------------------------------
 INSERT INTO trips (id, client_id, device_id, name, origin_name, destination_name, status, start_time, end_time, total_distance_m, duration_seconds, avg_speed_kmh, max_speed_kmh, points_count)
-VALUES (1, 1, 'veiculo_001', 'Floridiana para Centro (Mercado)', 'Jardim Floridiana', 'Mercado Municipal', 'completed', '2026-08-18 08:10:00', '2026-08-18 08:22:00', 3920.00, 720, 32.7, 49.2, 17);
+VALUES (1, 1, 'veiculo_001', 'Circuito Campus UNIP', 'Portaria UNIP', 'Estacionamento UNIP', 'completed', '2026-11-11 10:00:00', '2026-11-11 10:08:00', 850.00, 480, 22.5, 38.0, 5);
 
 INSERT INTO gps_positions (trip_id, device_id, latitude, longitude, velocidade_kmh, altitude_m, satelites, hdop, data_utc, hora_utc, gps_timestamp_utc, received_at, status) VALUES
-(1, 'veiculo_001', -22.382845, -47.554312, 0.0, 615.0, 10, 0.9, '2026-08-18', '11:10:00', '2026-08-18 11:10:00', '2026-08-18 08:10:00', 'ativo'),
-(1, 'veiculo_001', -22.384210, -47.554480, 22.0, 614.0, 10, 0.9, '2026-08-18', '11:10:45', '2026-08-18 11:10:45', '2026-08-18 08:10:45', 'ativo'),
-(1, 'veiculo_001', -22.386500, -47.554800, 35.0, 613.0, 11, 0.8, '2026-08-18', '11:11:30', '2026-08-18 11:11:30', '2026-08-18 08:11:30', 'ativo'),
-(1, 'veiculo_001', -22.389200, -47.555250, 42.0, 612.0, 11, 0.8, '2026-08-18', '11:12:15', '2026-08-18 11:12:15', '2026-08-18 08:12:15', 'ativo'),
-(1, 'veiculo_001', -22.392100, -47.555700, 45.5, 610.0, 12, 0.8, '2026-08-18', '11:13:00', '2026-08-18 11:13:00', '2026-08-18 08:13:00', 'ativo'),
-(1, 'veiculo_001', -22.394800, -47.556100, 48.0, 609.0, 12, 0.8, '2026-08-18', '11:13:45', '2026-08-18 11:13:45', '2026-08-18 08:13:45', 'ativo'),
-(1, 'veiculo_001', -22.397500, -47.556500, 49.2, 608.0, 12, 0.8, '2026-08-18', '11:14:30', '2026-08-18 11:14:30', '2026-08-18 08:14:30', 'ativo'),
-(1, 'veiculo_001', -22.400200, -47.556900, 44.0, 607.0, 11, 0.8, '2026-08-18', '11:15:15', '2026-08-18 11:15:15', '2026-08-18 08:15:15', 'ativo'),
-(1, 'veiculo_001', -22.403100, -47.557350, 40.0, 607.0, 11, 0.8, '2026-08-18', '11:16:00', '2026-08-18 11:16:00', '2026-08-18 08:16:00', 'ativo'),
-(1, 'veiculo_001', -22.406200, -47.557800, 36.0, 608.0, 11, 0.8, '2026-08-18', '11:16:45', '2026-08-18 11:16:45', '2026-08-18 08:16:45', 'ativo'),
-(1, 'veiculo_001', -22.409500, -47.558300, 28.0, 609.0, 10, 0.9, '2026-08-18', '11:17:30', '2026-08-18 11:17:30', '2026-08-18 08:17:30', 'ativo'),
-(1, 'veiculo_001', -22.410350, -47.559400, 25.0, 610.0, 10, 0.9, '2026-08-18', '11:18:15', '2026-08-18 11:18:15', '2026-08-18 08:18:15', 'ativo'),
-(1, 'veiculo_001', -22.410400, -47.561500, 32.0, 611.0, 10, 0.9, '2026-08-18', '11:19:00', '2026-08-18 11:19:00', '2026-08-18 08:19:00', 'ativo'),
-(1, 'veiculo_001', -22.410480, -47.563800, 24.0, 613.0, 9, 1.0, '2026-08-18', '11:19:45', '2026-08-18 11:19:45', '2026-08-18 08:19:45', 'ativo'),
-(1, 'veiculo_001', -22.411600, -47.563920, 18.0, 613.0, 9, 1.0, '2026-08-18', '11:20:30', '2026-08-18 11:20:30', '2026-08-18 08:20:30', 'ativo'),
-(1, 'veiculo_001', -22.412450, -47.564050, 6.0, 614.0, 10, 0.9, '2026-08-18', '11:21:15', '2026-08-18 11:21:15', '2026-08-18 08:21:15', 'ativo'),
-(1, 'veiculo_001', -22.412460, -47.564070, 0.0, 614.0, 10, 0.9, '2026-08-18', '11:22:00', '2026-08-18 11:22:00', '2026-08-18 08:22:00', 'ativo');
+(1, 'veiculo_001', -22.544885, -47.378445, 0.0, 643.0, 10, 0.9, '2026-11-11', '13:00:00', '2026-11-11 13:00:00', '2026-11-11 10:00:00', 'ativo'),
+(1, 'veiculo_001', -22.544150, -47.378120, 20.0, 643.0, 10, 0.9, '2026-11-11', '13:02:00', '2026-11-11 13:02:00', '2026-11-11 10:02:00', 'ativo'),
+(1, 'veiculo_001', -22.543200, -47.377600, 32.0, 644.0, 10, 0.9, '2026-11-11', '13:04:00', '2026-11-11 13:04:00', '2026-11-11 10:04:00', 'ativo'),
+(1, 'veiculo_001', -22.543900, -47.377100, 25.0, 643.0, 10, 0.9, '2026-11-11', '13:06:00', '2026-11-11 13:06:00', '2026-11-11 10:06:00', 'ativo'),
+(1, 'veiculo_001', -22.544885, -47.378445, 0.0, 643.0, 10, 0.9, '2026-11-11', '13:08:00', '2026-11-11 13:08:00', '2026-11-11 10:08:00', 'ativo');
 
 -- Alimentar cache da última posição conhecida
 INSERT INTO latest_positions (device_id, trip_id, latitude, longitude, velocidade_kmh, altitude_m, satelites, hdop, data_utc, hora_utc, gps_timestamp_utc, received_at, status)
-VALUES ('veiculo_001', 1, -22.412460, -47.564070, 0.0, 614.0, 10, 0.9, '2026-08-18', '11:22:00', '2026-08-18 11:22:00', '2026-08-18 08:22:00', 'ativo')
+VALUES ('veiculo_001', 1, -22.544885, -47.378445, 0.0, 643.0, 10, 0.9, '2026-11-11', '13:08:00', '2026-11-11 13:08:00', '2026-11-11 10:08:00', 'ativo')
 ON DUPLICATE KEY UPDATE latitude = VALUES(latitude), longitude = VALUES(longitude), velocidade_kmh = VALUES(velocidade_kmh), received_at = VALUES(received_at);

@@ -39,13 +39,13 @@ Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8080/api/gps' -Headers @{ 
 ```json
 {
   "device_id": "veiculo_001",
-  "latitude": -23.55052,
-  "longitude": -46.633308,
-  "velocidade_kmh": 42.5,
-  "altitude_m": 760.2,
-  "satelites": 8,
-  "data_utc": "12/07/2026",
-  "hora_utc": "14:32:10"
+  "latitude": -22.544885,
+  "longitude": -47.378445,
+  "velocidade_kmh": 0.0,
+  "altitude_m": 643.0,
+  "satelites": 10,
+  "data_utc": "11/11/2026",
+  "hora_utc": "12:00:00"
 }
 ```
 

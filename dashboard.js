@@ -13,223 +13,29 @@ if (!storedUrl || storedUrl.indexOf(':8080') !== -1) {
   localStorage.setItem('segcar_url', storedUrl);
 }
 
-// Rotas reais pré-carregadas seguindo as vias de Rio Claro-SP e Limeira-SP
+// Rotas de demonstracao pre-carregadas no Campus da UNIP
 const SEED_TRIPS_DATA = [
   {
     id: 100,
     client_id: 1,
     device_id: 'veiculo_001',
-    name: 'Rio Claro para UNIP Limeira',
-    origin_name: 'Rio Claro - SP',
-    destination_name: 'UNIP Limeira',
+    name: 'Circuito Campus UNIP',
+    origin_name: 'Portaria UNIP',
+    destination_name: 'Estacionamento UNIP',
     status: 'completed',
-    start_time: '2026-10-28 18:12:47',
-    end_time: '2026-10-28 19:10:05',
-    total_distance_m: 37574.08,
-    duration_seconds: 3438,
-    avg_speed_kmh: 48.7,
-    max_speed_kmh: 118.2,
-    points_count: 1117,
+    start_time: '2026-11-11 10:00:00',
+    end_time: '2026-11-11 10:08:00',
+    total_distance_m: 850.00,
+    duration_seconds: 480,
+    avg_speed_kmh: 22.5,
+    max_speed_kmh: 38.0,
+    points_count: 5,
     positions: [
-      { latitude: -22.371706, longitude: -47.575347, velocidade_kmh: 0.0, altitude_m: 556.5, hora_utc: '21:12:41', data_utc: '28/10/2026', received_at: '2026-10-28 18:12:47', satelites: 11, hdop: 0.90 },
-      { latitude: -22.371603, longitude: -47.577098, velocidade_kmh: 18.3, altitude_m: 542.9, hora_utc: '21:17:37', data_utc: '28/10/2026', received_at: '2026-10-28 18:17:37', satelites: 11, hdop: 0.90 },
-      { latitude: -22.373785, longitude: -47.578052, velocidade_kmh: 31.0, altitude_m: 562.7, hora_utc: '21:18:25', data_utc: '28/10/2026', received_at: '2026-10-28 18:18:25', satelites: 10, hdop: 1.00 },
-      { latitude: -22.375514, longitude: -47.579257, velocidade_kmh: 30.9, altitude_m: 565.6, hora_utc: '21:19:01', data_utc: '28/10/2026', received_at: '2026-10-28 18:19:01', satelites: 11, hdop: 0.90 },
-      { latitude: -22.376895, longitude: -47.581027, velocidade_kmh: 32.8, altitude_m: 566.9, hora_utc: '21:19:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:19:51', satelites: 11, hdop: 0.90 },
-      { latitude: -22.378427, longitude: -47.582862, velocidade_kmh: 19.2, altitude_m: 545.0, hora_utc: '21:20:23', data_utc: '28/10/2026', received_at: '2026-10-28 18:20:23', satelites: 11, hdop: 0.90 },
-      { latitude: -22.379682, longitude: -47.582683, velocidade_kmh: 33.9, altitude_m: 548.2, hora_utc: '21:20:53', data_utc: '28/10/2026', received_at: '2026-10-28 18:20:53', satelites: 11, hdop: 0.90 },
-      { latitude: -22.381492, longitude: -47.582275, velocidade_kmh: 27.1, altitude_m: 562.7, hora_utc: '21:21:19', data_utc: '28/10/2026', received_at: '2026-10-28 18:21:19', satelites: 11, hdop: 0.90 },
-      { latitude: -22.383415, longitude: -47.582199, velocidade_kmh: 37.4, altitude_m: 587.1, hora_utc: '21:21:47', data_utc: '28/10/2026', received_at: '2026-10-28 18:21:47', satelites: 11, hdop: 0.90 },
-      { latitude: -22.384986, longitude: -47.580940, velocidade_kmh: 46.6, altitude_m: 612.1, hora_utc: '21:22:11', data_utc: '28/10/2026', received_at: '2026-10-28 18:22:11', satelites: 11, hdop: 0.90 },
-      { latitude: -22.387285, longitude: -47.580768, velocidade_kmh: 24.7, altitude_m: 629.1, hora_utc: '21:22:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:22:39', satelites: 11, hdop: 0.90 },
-      { latitude: -22.389341, longitude: -47.579917, velocidade_kmh: 36.5, altitude_m: 622.5, hora_utc: '21:23:17', data_utc: '28/10/2026', received_at: '2026-10-28 18:23:17', satelites: 11, hdop: 0.90 },
-      { latitude: -22.391210, longitude: -47.579151, velocidade_kmh: 14.7, altitude_m: 621.6, hora_utc: '21:23:49', data_utc: '28/10/2026', received_at: '2026-10-28 18:23:49', satelites: 11, hdop: 0.90 },
-      { latitude: -22.393526, longitude: -47.578178, velocidade_kmh: 11.5, altitude_m: 622.9, hora_utc: '21:24:17', data_utc: '28/10/2026', received_at: '2026-10-28 18:24:17', satelites: 11, hdop: 0.90 },
-      { latitude: -22.395526, longitude: -47.577362, velocidade_kmh: 40.7, altitude_m: 620.8, hora_utc: '21:24:55', data_utc: '28/10/2026', received_at: '2026-10-28 18:24:55', satelites: 11, hdop: 0.90 },
-      { latitude: -22.397583, longitude: -47.576499, velocidade_kmh: 38.6, altitude_m: 619.6, hora_utc: '21:25:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:25:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.399793, longitude: -47.575862, velocidade_kmh: 32.3, altitude_m: 608.9, hora_utc: '21:25:59', data_utc: '28/10/2026', received_at: '2026-10-28 18:25:59', satelites: 10, hdop: 1.00 },
-      { latitude: -22.401678, longitude: -47.575855, velocidade_kmh: 37.5, altitude_m: 599.4, hora_utc: '21:26:41', data_utc: '28/10/2026', received_at: '2026-10-28 18:26:41', satelites: 10, hdop: 1.00 },
-      { latitude: -22.403560, longitude: -47.576831, velocidade_kmh: 23.9, altitude_m: 606.5, hora_utc: '21:27:05', data_utc: '28/10/2026', received_at: '2026-10-28 18:27:05', satelites: 10, hdop: 1.00 },
-      { latitude: -22.405342, longitude: -47.578071, velocidade_kmh: 25.3, altitude_m: 612.0, hora_utc: '21:27:33', data_utc: '28/10/2026', received_at: '2026-10-28 18:27:33', satelites: 10, hdop: 1.00 },
-      { latitude: -22.406013, longitude: -47.580101, velocidade_kmh: 32.9, altitude_m: 629.4, hora_utc: '21:28:03', data_utc: '28/10/2026', received_at: '2026-10-28 18:28:03', satelites: 10, hdop: 1.00 },
-      { latitude: -22.406084, longitude: -47.582454, velocidade_kmh: 55.6, altitude_m: 616.9, hora_utc: '21:28:41', data_utc: '28/10/2026', received_at: '2026-10-28 18:28:41', satelites: 10, hdop: 1.00 },
-      { latitude: -22.405769, longitude: -47.585285, velocidade_kmh: 34.6, altitude_m: 618.0, hora_utc: '21:29:21', data_utc: '28/10/2026', received_at: '2026-10-28 18:29:21', satelites: 10, hdop: 1.00 },
-      { latitude: -22.405607, longitude: -47.588584, velocidade_kmh: 57.2, altitude_m: 599.8, hora_utc: '21:29:45', data_utc: '28/10/2026', received_at: '2026-10-28 18:29:45', satelites: 9, hdop: 1.10 },
-      { latitude: -22.406064, longitude: -47.589637, velocidade_kmh: 8.2, altitude_m: 603.4, hora_utc: '21:30:09', data_utc: '28/10/2026', received_at: '2026-10-28 18:30:09', satelites: 10, hdop: 1.00 },
-      { latitude: -22.408483, longitude: -47.586608, velocidade_kmh: 78.0, altitude_m: 602.8, hora_utc: '21:30:33', data_utc: '28/10/2026', received_at: '2026-10-28 18:30:33', satelites: 10, hdop: 1.00 },
-      { latitude: -22.412200, longitude: -47.583412, velocidade_kmh: 69.2, altitude_m: 605.7, hora_utc: '21:30:57', data_utc: '28/10/2026', received_at: '2026-10-28 18:30:57', satelites: 10, hdop: 1.00 },
-      { latitude: -22.414596, longitude: -47.582141, velocidade_kmh: 11.2, altitude_m: 616.4, hora_utc: '21:31:35', data_utc: '28/10/2026', received_at: '2026-10-28 18:31:35', satelites: 10, hdop: 1.00 },
-      { latitude: -22.416664, longitude: -47.579925, velocidade_kmh: 67.7, altitude_m: 604.1, hora_utc: '21:35:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:35:27', satelites: 9, hdop: 1.10 },
-      { latitude: -22.420730, longitude: -47.577339, velocidade_kmh: 100.3, altitude_m: 585.7, hora_utc: '21:35:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:35:51', satelites: 9, hdop: 1.10 },
-      { latitude: -22.426160, longitude: -47.574607, velocidade_kmh: 100.7, altitude_m: 599.6, hora_utc: '21:36:15', data_utc: '28/10/2026', received_at: '2026-10-28 18:36:15', satelites: 9, hdop: 1.10 },
-      { latitude: -22.431440, longitude: -47.571990, velocidade_kmh: 85.1, altitude_m: 622.6, hora_utc: '21:36:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:36:39', satelites: 9, hdop: 1.10 },
-      { latitude: -22.436569, longitude: -47.569366, velocidade_kmh: 97.0, altitude_m: 624.9, hora_utc: '21:37:03', data_utc: '28/10/2026', received_at: '2026-10-28 18:37:03', satelites: 9, hdop: 1.10 },
-      { latitude: -22.441240, longitude: -47.566394, velocidade_kmh: 91.0, altitude_m: 604.5, hora_utc: '21:37:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:37:27', satelites: 9, hdop: 1.10 },
-      { latitude: -22.445423, longitude: -47.563007, velocidade_kmh: 94.3, altitude_m: 600.7, hora_utc: '21:37:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:37:51', satelites: 9, hdop: 1.10 },
-      { latitude: -22.450250, longitude: -47.558193, velocidade_kmh: 112.2, altitude_m: 555.8, hora_utc: '21:38:15', data_utc: '28/10/2026', received_at: '2026-10-28 18:38:15', satelites: 10, hdop: 1.00 },
-      { latitude: -22.454643, longitude: -47.552318, velocidade_kmh: 117.0, altitude_m: 558.9, hora_utc: '21:38:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:38:39', satelites: 10, hdop: 1.00 },
-      { latitude: -22.458070, longitude: -47.546203, velocidade_kmh: 108.4, altitude_m: 582.7, hora_utc: '21:39:03', data_utc: '28/10/2026', received_at: '2026-10-28 18:39:03', satelites: 10, hdop: 1.00 },
-      { latitude: -22.460594, longitude: -47.540016, velocidade_kmh: 103.2, altitude_m: 608.6, hora_utc: '21:39:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:39:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.462066, longitude: -47.533386, velocidade_kmh: 107.1, altitude_m: 608.7, hora_utc: '21:39:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:39:51', satelites: 10, hdop: 1.00 },
-      { latitude: -22.462249, longitude: -47.526443, velocidade_kmh: 112.1, altitude_m: 602.5, hora_utc: '21:40:15', data_utc: '28/10/2026', received_at: '2026-10-28 18:40:15', satelites: 10, hdop: 1.00 },
-      { latitude: -22.464542, longitude: -47.519565, velocidade_kmh: 110.0, altitude_m: 594.0, hora_utc: '21:40:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:40:39', satelites: 10, hdop: 1.00 },
-      { latitude: -22.466983, longitude: -47.513656, velocidade_kmh: 84.3, altitude_m: 598.9, hora_utc: '21:41:03', data_utc: '28/10/2026', received_at: '2026-10-28 18:41:03', satelites: 10, hdop: 1.00 },
-      { latitude: -22.469169, longitude: -47.508506, velocidade_kmh: 92.3, altitude_m: 619.1, hora_utc: '21:41:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:41:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.471479, longitude: -47.503196, velocidade_kmh: 87.5, altitude_m: 612.8, hora_utc: '21:41:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:41:51', satelites: 10, hdop: 1.00 },
-      { latitude: -22.473472, longitude: -47.497524, velocidade_kmh: 92.2, altitude_m: 637.1, hora_utc: '21:42:15', data_utc: '28/10/2026', received_at: '2026-10-28 18:42:15', satelites: 10, hdop: 1.00 },
-      { latitude: -22.475177, longitude: -47.491802, velocidade_kmh: 92.7, altitude_m: 656.2, hora_utc: '21:42:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:42:39', satelites: 10, hdop: 1.00 },
-      { latitude: -22.477184, longitude: -47.485137, velocidade_kmh: 116.3, altitude_m: 639.8, hora_utc: '21:43:03', data_utc: '28/10/2026', received_at: '2026-10-28 18:43:03', satelites: 10, hdop: 1.00 },
-      { latitude: -22.479253, longitude: -47.478363, velocidade_kmh: 99.3, altitude_m: 662.3, hora_utc: '21:43:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:43:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.480955, longitude: -47.472805, velocidade_kmh: 78.4, altitude_m: 677.7, hora_utc: '21:43:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:43:51', satelites: 10, hdop: 1.00 },
-      { latitude: -22.482524, longitude: -47.467460, velocidade_kmh: 88.5, altitude_m: 702.7, hora_utc: '21:44:15', data_utc: '28/10/2026', received_at: '2026-10-28 18:44:15', satelites: 9, hdop: 1.00 },
-      { latitude: -22.484079, longitude: -47.462436, velocidade_kmh: 62.7, altitude_m: 693.8, hora_utc: '21:44:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:44:39', satelites: 10, hdop: 1.00 },
-      { latitude: -22.485858, longitude: -47.462253, velocidade_kmh: 29.1, altitude_m: 671.2, hora_utc: '21:45:05', data_utc: '28/10/2026', received_at: '2026-10-28 18:45:05', satelites: 10, hdop: 1.00 },
-      { latitude: -22.487848, longitude: -47.463714, velocidade_kmh: 14.7, altitude_m: 671.6, hora_utc: '21:45:33', data_utc: '28/10/2026', received_at: '2026-10-28 18:45:33', satelites: 10, hdop: 1.00 },
-      { latitude: -22.489900, longitude: -47.464714, velocidade_kmh: 42.7, altitude_m: 673.4, hora_utc: '21:46:01', data_utc: '28/10/2026', received_at: '2026-10-28 18:46:01', satelites: 10, hdop: 1.00 },
-      { latitude: -22.493297, longitude: -47.465129, velocidade_kmh: 66.4, altitude_m: 654.0, hora_utc: '21:46:25', data_utc: '28/10/2026', received_at: '2026-10-28 18:46:25', satelites: 10, hdop: 1.00 },
-      { latitude: -22.497022, longitude: -47.464290, velocidade_kmh: 59.4, altitude_m: 651.4, hora_utc: '21:46:49', data_utc: '28/10/2026', received_at: '2026-10-28 18:46:49', satelites: 10, hdop: 1.00 },
-      { latitude: -22.500349, longitude: -47.462482, velocidade_kmh: 68.0, altitude_m: 644.0, hora_utc: '21:47:13', data_utc: '28/10/2026', received_at: '2026-10-28 18:47:13', satelites: 10, hdop: 1.00 },
-      { latitude: -22.504089, longitude: -47.460498, velocidade_kmh: 72.4, altitude_m: 632.0, hora_utc: '21:47:37', data_utc: '28/10/2026', received_at: '2026-10-28 18:47:37', satelites: 10, hdop: 1.00 },
-      { latitude: -22.507862, longitude: -47.458347, velocidade_kmh: 74.7, altitude_m: 626.2, hora_utc: '21:48:01', data_utc: '28/10/2026', received_at: '2026-10-28 18:48:01', satelites: 10, hdop: 1.00 },
-      { latitude: -22.510955, longitude: -47.455444, velocidade_kmh: 66.1, altitude_m: 629.8, hora_utc: '21:48:25', data_utc: '28/10/2026', received_at: '2026-10-28 18:48:25', satelites: 10, hdop: 1.00 },
-      { latitude: -22.513908, longitude: -47.452579, velocidade_kmh: 60.9, altitude_m: 630.3, hora_utc: '21:48:49', data_utc: '28/10/2026', received_at: '2026-10-28 18:48:49', satelites: 10, hdop: 1.00 },
-      { latitude: -22.517124, longitude: -47.449329, velocidade_kmh: 71.2, altitude_m: 623.0, hora_utc: '21:49:13', data_utc: '28/10/2026', received_at: '2026-10-28 18:49:13', satelites: 10, hdop: 1.00 },
-      { latitude: -22.519954, longitude: -47.446456, velocidade_kmh: 62.7, altitude_m: 648.6, hora_utc: '21:49:37', data_utc: '28/10/2026', received_at: '2026-10-28 18:49:37', satelites: 10, hdop: 1.00 },
-      { latitude: -22.522890, longitude: -47.443695, velocidade_kmh: 61.0, altitude_m: 634.0, hora_utc: '21:50:01', data_utc: '28/10/2026', received_at: '2026-10-28 18:50:01', satelites: 10, hdop: 1.00 },
-      { latitude: -22.525774, longitude: -47.440090, velocidade_kmh: 75.0, altitude_m: 599.2, hora_utc: '21:50:25', data_utc: '28/10/2026', received_at: '2026-10-28 18:50:25', satelites: 10, hdop: 1.00 },
-      { latitude: -22.528045, longitude: -47.436401, velocidade_kmh: 64.7, altitude_m: 605.9, hora_utc: '21:50:49', data_utc: '28/10/2026', received_at: '2026-10-28 18:50:49', satelites: 10, hdop: 1.00 },
-      { latitude: -22.530076, longitude: -47.434020, velocidade_kmh: 25.5, altitude_m: 619.6, hora_utc: '21:51:13', data_utc: '28/10/2026', received_at: '2026-10-28 18:51:13', satelites: 10, hdop: 1.00 },
-      { latitude: -22.532007, longitude: -47.431957, velocidade_kmh: 51.4, altitude_m: 624.4, hora_utc: '21:51:39', data_utc: '28/10/2026', received_at: '2026-10-28 18:51:39', satelites: 10, hdop: 1.00 },
-      { latitude: -22.534589, longitude: -47.429817, velocidade_kmh: 59.3, altitude_m: 615.4, hora_utc: '21:52:03', data_utc: '28/10/2026', received_at: '2026-10-28 18:52:03', satelites: 10, hdop: 1.00 },
-      { latitude: -22.537706, longitude: -47.428272, velocidade_kmh: 57.7, altitude_m: 594.5, hora_utc: '21:52:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:52:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.540485, longitude: -47.427028, velocidade_kmh: 31.3, altitude_m: 581.0, hora_utc: '21:52:53', data_utc: '28/10/2026', received_at: '2026-10-28 18:52:53', satelites: 10, hdop: 1.00 },
-      { latitude: -22.542463, longitude: -47.425140, velocidade_kmh: 51.3, altitude_m: 579.6, hora_utc: '21:53:17', data_utc: '28/10/2026', received_at: '2026-10-28 18:53:17', satelites: 10, hdop: 1.00 },
-      { latitude: -22.544254, longitude: -47.422920, velocidade_kmh: 27.7, altitude_m: 569.1, hora_utc: '21:53:43', data_utc: '28/10/2026', received_at: '2026-10-28 18:53:43', satelites: 10, hdop: 1.00 },
-      { latitude: -22.545499, longitude: -47.421642, velocidade_kmh: 4.9, altitude_m: 572.7, hora_utc: '21:54:17', data_utc: '28/10/2026', received_at: '2026-10-28 18:54:17', satelites: 10, hdop: 1.00 },
-      { latitude: -22.545152, longitude: -47.418792, velocidade_kmh: 54.6, altitude_m: 595.7, hora_utc: '21:54:49', data_utc: '28/10/2026', received_at: '2026-10-28 18:54:49', satelites: 9, hdop: 1.20 },
-      { latitude: -22.545022, longitude: -47.415996, velocidade_kmh: 11.0, altitude_m: 581.0, hora_utc: '21:55:19', data_utc: '28/10/2026', received_at: '2026-10-28 18:55:19', satelites: 9, hdop: 1.20 },
-      { latitude: -22.544418, longitude: -47.413249, velocidade_kmh: 34.4, altitude_m: 561.5, hora_utc: '21:55:43', data_utc: '28/10/2026', received_at: '2026-10-28 18:55:43', satelites: 9, hdop: 1.20 },
-      { latitude: -22.542972, longitude: -47.410964, velocidade_kmh: 63.4, altitude_m: 562.6, hora_utc: '21:56:19', data_utc: '28/10/2026', received_at: '2026-10-28 18:56:19', satelites: 10, hdop: 1.00 },
-      { latitude: -22.543680, longitude: -47.407173, velocidade_kmh: 61.9, altitude_m: 579.3, hora_utc: '21:56:43', data_utc: '28/10/2026', received_at: '2026-10-28 18:56:43', satelites: 9, hdop: 1.20 },
-      { latitude: -22.543884, longitude: -47.404216, velocidade_kmh: 29.9, altitude_m: 572.7, hora_utc: '21:57:07', data_utc: '28/10/2026', received_at: '2026-10-28 18:57:07', satelites: 10, hdop: 1.00 },
-      { latitude: -22.544067, longitude: -47.400989, velocidade_kmh: 52.3, altitude_m: 564.8, hora_utc: '21:57:31', data_utc: '28/10/2026', received_at: '2026-10-28 18:57:31', satelites: 8, hdop: 1.30 },
-      { latitude: -22.544652, longitude: -47.398185, velocidade_kmh: 50.0, altitude_m: 577.5, hora_utc: '21:57:55', data_utc: '28/10/2026', received_at: '2026-10-28 18:57:55', satelites: 9, hdop: 1.20 },
-      { latitude: -22.545131, longitude: -47.395107, velocidade_kmh: 59.1, altitude_m: 593.2, hora_utc: '21:58:27', data_utc: '28/10/2026', received_at: '2026-10-28 18:58:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.545864, longitude: -47.390880, velocidade_kmh: 69.1, altitude_m: 616.2, hora_utc: '21:58:51', data_utc: '28/10/2026', received_at: '2026-10-28 18:58:51', satelites: 9, hdop: 1.20 },
-      { latitude: -22.546281, longitude: -47.387458, velocidade_kmh: 38.3, altitude_m: 611.6, hora_utc: '21:59:15', data_utc: '28/10/2026', received_at: '2026-10-28 18:59:15', satelites: 10, hdop: 1.00 },
-      { latitude: -22.544624, longitude: -47.386375, velocidade_kmh: 37.1, altitude_m: 632.8, hora_utc: '22:00:03', data_utc: '28/10/2026', received_at: '2026-10-28 19:00:03', satelites: 10, hdop: 1.00 },
-      { latitude: -22.541915, longitude: -47.384933, velocidade_kmh: 57.7, altitude_m: 669.7, hora_utc: '22:00:27', data_utc: '28/10/2026', received_at: '2026-10-28 19:00:27', satelites: 10, hdop: 1.00 },
-      { latitude: -22.539091, longitude: -47.383388, velocidade_kmh: 42.2, altitude_m: 666.5, hora_utc: '22:00:51', data_utc: '28/10/2026', received_at: '2026-10-28 19:00:51', satelites: 10, hdop: 1.00 },
-      { latitude: -22.537200, longitude: -47.382133, velocidade_kmh: 15.7, altitude_m: 656.7, hora_utc: '22:01:23', data_utc: '28/10/2026', received_at: '2026-10-28 19:01:23', satelites: 10, hdop: 1.00 },
-      { latitude: -22.539777, longitude: -47.380401, velocidade_kmh: 48.5, altitude_m: 659.5, hora_utc: '22:01:49', data_utc: '28/10/2026', received_at: '2026-10-28 19:01:49', satelites: 10, hdop: 1.00 },
-      { latitude: -22.542270, longitude: -47.378723, velocidade_kmh: 42.9, altitude_m: 659.1, hora_utc: '22:02:13', data_utc: '28/10/2026', received_at: '2026-10-28 19:02:13', satelites: 10, hdop: 1.00 },
-      { latitude: -22.544281, longitude: -47.377826, velocidade_kmh: 2.5, altitude_m: 651.4, hora_utc: '22:02:49', data_utc: '28/10/2026', received_at: '2026-10-28 19:02:49', satelites: 10, hdop: 1.00 },
-      { latitude: -22.544761, longitude: -47.378620, velocidade_kmh: 0.0, altitude_m: 643.4, hora_utc: '22:10:05', data_utc: '28/10/2026', received_at: '2026-10-28 19:10:05', satelites: 3, hdop: 3.00 }
-    ]
-  },
-  {
-    id: 1,
-    client_id: 1,
-    device_id: 'veiculo_001',
-    name: 'Floridiana para Centro (Mercado)',
-    origin_name: 'Jardim Floridiana',
-    destination_name: 'Mercado Municipal',
-    status: 'completed',
-    start_time: '2026-08-18 08:10:00',
-    end_time: '2026-08-18 08:22:00',
-    total_distance_m: 3920.00,
-    duration_seconds: 720,
-    avg_speed_kmh: 32.7,
-    max_speed_kmh: 49.2,
-    points_count: 17,
-    positions: [
-      { latitude: -22.382845, longitude: -47.554312, velocidade_kmh: 0.0, altitude_m: 615.0, hora_utc: '11:10:00', satelites: 10, hdop: 0.9 },
-      { latitude: -22.384210, longitude: -47.554480, velocidade_kmh: 22.0, altitude_m: 614.0, hora_utc: '11:10:45', satelites: 10, hdop: 0.9 },
-      { latitude: -22.386500, longitude: -47.554800, velocidade_kmh: 35.0, altitude_m: 613.0, hora_utc: '11:11:30', satelites: 11, hdop: 0.8 },
-      { latitude: -22.389200, longitude: -47.555250, velocidade_kmh: 42.0, altitude_m: 612.0, hora_utc: '11:12:15', satelites: 11, hdop: 0.8 },
-      { latitude: -22.392100, longitude: -47.555700, velocidade_kmh: 45.5, altitude_m: 610.0, hora_utc: '11:13:00', satelites: 12, hdop: 0.8 },
-      { latitude: -22.394800, longitude: -47.556100, velocidade_kmh: 48.0, altitude_m: 609.0, hora_utc: '11:13:45', satelites: 12, hdop: 0.8 },
-      { latitude: -22.397500, longitude: -47.556500, velocidade_kmh: 49.2, altitude_m: 608.0, hora_utc: '11:14:30', satelites: 12, hdop: 0.8 },
-      { latitude: -22.400200, longitude: -47.556900, velocidade_kmh: 44.0, altitude_m: 607.0, hora_utc: '11:15:15', satelites: 11, hdop: 0.8 },
-      { latitude: -22.403100, longitude: -47.557350, velocidade_kmh: 40.0, altitude_m: 607.0, hora_utc: '11:16:00', satelites: 11, hdop: 0.8 },
-      { latitude: -22.406200, longitude: -47.557800, velocidade_kmh: 36.0, altitude_m: 608.0, hora_utc: '11:16:45', satelites: 11, hdop: 0.8 },
-      { latitude: -22.409500, longitude: -47.558300, velocidade_kmh: 28.0, altitude_m: 609.0, hora_utc: '11:17:30', satelites: 10, hdop: 0.9 },
-      { latitude: -22.410350, longitude: -47.559400, velocidade_kmh: 25.0, altitude_m: 610.0, hora_utc: '11:18:15', satelites: 10, hdop: 0.9 },
-      { latitude: -22.410400, longitude: -47.561500, velocidade_kmh: 32.0, altitude_m: 611.0, hora_utc: '11:19:00', satelites: 10, hdop: 0.9 },
-      { latitude: -22.410480, longitude: -47.563800, velocidade_kmh: 24.0, altitude_m: 613.0, hora_utc: '11:19:45', satelites: 9, hdop: 1.0 },
-      { latitude: -22.411600, longitude: -47.563920, velocidade_kmh: 18.0, altitude_m: 613.0, hora_utc: '11:20:30', satelites: 9, hdop: 1.0 },
-      { latitude: -22.412450, longitude: -47.564050, velocidade_kmh: 6.0, altitude_m: 614.0, hora_utc: '11:21:15', satelites: 10, hdop: 0.9 },
-      { latitude: -22.412460, longitude: -47.564070, velocidade_kmh: 0.0, altitude_m: 614.0, hora_utc: '11:22:00', satelites: 10, hdop: 0.9 }
-    ]
-  },
-  {
-    id: 2,
-    client_id: 1,
-    device_id: 'veiculo_001',
-    name: 'Centro para Parque Lago Azul',
-    origin_name: 'Centro de Rio Claro',
-    destination_name: 'Parque Lago Azul',
-    status: 'completed',
-    start_time: '2026-08-18 14:30:00',
-    end_time: '2026-08-18 14:41:00',
-    total_distance_m: 3650.00,
-    duration_seconds: 660,
-    avg_speed_kmh: 33.2,
-    max_speed_kmh: 47.0,
-    points_count: 16,
-    positions: [
-      { latitude: -22.412450, longitude: -47.564050, velocidade_kmh: 0.0, altitude_m: 614.0, hora_utc: '17:30:00', satelites: 10, hdop: 0.9 },
-      { latitude: -22.412350, longitude: -47.561500, velocidade_kmh: 24.0, altitude_m: 612.0, hora_utc: '17:30:45', satelites: 10, hdop: 0.9 },
-      { latitude: -22.412200, longitude: -47.558500, velocidade_kmh: 30.0, altitude_m: 610.0, hora_utc: '17:31:30', satelites: 11, hdop: 0.8 },
-      { latitude: -22.409500, longitude: -47.558100, velocidade_kmh: 38.0, altitude_m: 608.0, hora_utc: '17:32:15', satelites: 11, hdop: 0.8 },
-      { latitude: -22.406200, longitude: -47.557600, velocidade_kmh: 42.0, altitude_m: 607.0, hora_utc: '17:33:00', satelites: 12, hdop: 0.8 },
-      { latitude: -22.405200, longitude: -47.557400, velocidade_kmh: 35.0, altitude_m: 607.0, hora_utc: '17:33:45', satelites: 12, hdop: 0.8 },
-      { latitude: -22.405000, longitude: -47.554200, velocidade_kmh: 44.0, altitude_m: 606.0, hora_utc: '17:34:30', satelites: 12, hdop: 0.8 },
-      { latitude: -22.404800, longitude: -47.550100, velocidade_kmh: 47.0, altitude_m: 604.0, hora_utc: '17:35:15', satelites: 12, hdop: 0.8 },
-      { latitude: -22.404600, longitude: -47.545800, velocidade_kmh: 46.0, altitude_m: 603.0, hora_utc: '17:36:00', satelites: 11, hdop: 0.8 },
-      { latitude: -22.404400, longitude: -47.541500, velocidade_kmh: 43.0, altitude_m: 602.0, hora_utc: '17:36:45', satelites: 11, hdop: 0.8 },
-      { latitude: -22.405100, longitude: -47.538500, velocidade_kmh: 36.0, altitude_m: 600.0, hora_utc: '17:37:30', satelites: 11, hdop: 0.8 },
-      { latitude: -22.405700, longitude: -47.535800, velocidade_kmh: 30.0, altitude_m: 599.0, hora_utc: '17:38:15', satelites: 10, hdop: 0.9 },
-      { latitude: -22.406100, longitude: -47.534200, velocidade_kmh: 22.0, altitude_m: 598.0, hora_utc: '17:39:00', satelites: 10, hdop: 0.9 },
-      { latitude: -22.406500, longitude: -47.533400, velocidade_kmh: 15.0, altitude_m: 598.0, hora_utc: '17:39:45', satelites: 10, hdop: 0.9 },
-      { latitude: -22.406600, longitude: -47.533200, velocidade_kmh: 4.0, altitude_m: 598.0, hora_utc: '17:40:30', satelites: 10, hdop: 0.9 },
-      { latitude: -22.406620, longitude: -47.533180, velocidade_kmh: 0.0, altitude_m: 598.0, hora_utc: '17:41:00', satelites: 10, hdop: 0.9 }
-    ]
-  },
-  {
-    id: 3,
-    client_id: 1,
-    device_id: 'veiculo_001',
-    name: 'Lago Azul para Shopping Rio Claro',
-    origin_name: 'Lago Azul',
-    destination_name: 'Shopping Rio Claro',
-    status: 'completed',
-    start_time: '2026-08-19 07:45:00',
-    end_time: '2026-08-19 07:59:00',
-    total_distance_m: 5840.00,
-    duration_seconds: 840,
-    avg_speed_kmh: 41.7,
-    max_speed_kmh: 68.0,
-    points_count: 18,
-    positions: [
-      { latitude: -22.406600, longitude: -47.533200, velocidade_kmh: 0.0, altitude_m: 598.0, hora_utc: '10:45:00', satelites: 11, hdop: 0.8 },
-      { latitude: -22.406000, longitude: -47.534500, velocidade_kmh: 22.0, altitude_m: 598.0, hora_utc: '10:45:45', satelites: 11, hdop: 0.8 },
-      { latitude: -22.405500, longitude: -47.537200, velocidade_kmh: 32.0, altitude_m: 599.0, hora_utc: '10:46:30', satelites: 11, hdop: 0.8 },
-      { latitude: -22.404900, longitude: -47.541000, velocidade_kmh: 40.0, altitude_m: 601.0, hora_utc: '10:47:15', satelites: 12, hdop: 0.8 },
-      { latitude: -22.404600, longitude: -47.545500, velocidade_kmh: 45.0, altitude_m: 603.0, hora_utc: '10:48:00', satelites: 12, hdop: 0.7 },
-      { latitude: -22.404800, longitude: -47.550500, velocidade_kmh: 46.0, altitude_m: 604.0, hora_utc: '10:48:45', satelites: 12, hdop: 0.7 },
-      { latitude: -22.405000, longitude: -47.554500, velocidade_kmh: 44.0, altitude_m: 606.0, hora_utc: '10:49:30', satelites: 12, hdop: 0.7 },
-      { latitude: -22.405200, longitude: -47.557400, velocidade_kmh: 36.0, altitude_m: 607.0, hora_utc: '10:50:15', satelites: 12, hdop: 0.7 },
-      { latitude: -22.408200, longitude: -47.557900, velocidade_kmh: 48.0, altitude_m: 608.0, hora_utc: '10:51:00', satelites: 12, hdop: 0.7 },
-      { latitude: -22.412500, longitude: -47.558600, velocidade_kmh: 55.0, altitude_m: 610.0, hora_utc: '10:51:45', satelites: 12, hdop: 0.7 },
-      { latitude: -22.417000, longitude: -47.559200, velocidade_kmh: 60.0, altitude_m: 612.0, hora_utc: '10:52:30', satelites: 12, hdop: 0.7 },
-      { latitude: -22.421800, longitude: -47.560100, velocidade_kmh: 65.0, altitude_m: 614.0, hora_utc: '10:53:15', satelites: 11, hdop: 0.8 },
-      { latitude: -22.426500, longitude: -47.561000, velocidade_kmh: 68.0, altitude_m: 615.0, hora_utc: '10:54:00', satelites: 11, hdop: 0.8 },
-      { latitude: -22.431000, longitude: -47.561800, velocidade_kmh: 58.0, altitude_m: 616.0, hora_utc: '10:54:45', satelites: 11, hdop: 0.8 },
-      { latitude: -22.434500, longitude: -47.562400, velocidade_kmh: 45.0, altitude_m: 617.0, hora_utc: '10:55:30', satelites: 10, hdop: 0.8 },
-      { latitude: -22.436500, longitude: -47.562850, velocidade_kmh: 30.0, altitude_m: 618.0, hora_utc: '10:56:15', satelites: 10, hdop: 0.9 },
-      { latitude: -22.437100, longitude: -47.562980, velocidade_kmh: 10.0, altitude_m: 618.0, hora_utc: '10:57:00', satelites: 10, hdop: 0.9 },
-      { latitude: -22.437200, longitude: -47.563000, velocidade_kmh: 0.0, altitude_m: 618.0, hora_utc: '10:57:45', satelites: 10, hdop: 0.9 }
+      { latitude: -22.544885, longitude: -47.378445, velocidade_kmh: 0.0, altitude_m: 643.0, hora_utc: '13:00:00', data_utc: '11/11/2026', received_at: '2026-11-11 10:00:00', satelites: 10, hdop: 0.90 },
+      { latitude: -22.544150, longitude: -47.378120, velocidade_kmh: 20.0, altitude_m: 643.0, hora_utc: '13:02:00', data_utc: '11/11/2026', received_at: '2026-11-11 10:02:00', satelites: 10, hdop: 0.90 },
+      { latitude: -22.543200, longitude: -47.377600, velocidade_kmh: 32.0, altitude_m: 644.0, hora_utc: '13:04:00', data_utc: '11/11/2026', received_at: '2026-11-11 10:04:00', satelites: 10, hdop: 0.90 },
+      { latitude: -22.543900, longitude: -47.377100, velocidade_kmh: 25.0, altitude_m: 643.0, hora_utc: '13:06:00', data_utc: '11/11/2026', received_at: '2026-11-11 10:06:00', satelites: 10, hdop: 0.90 },
+      { latitude: -22.544885, longitude: -47.378445, velocidade_kmh: 0.0, altitude_m: 643.0, hora_utc: '13:08:00', data_utc: '11/11/2026', received_at: '2026-11-11 10:08:00', satelites: 10, hdop: 0.90 }
     ]
   }
 ];
@@ -288,8 +94,8 @@ let config = {
   url:        storedUrl,
   deviceId:   localStorage.getItem('segcar_device')     || 'veiculo_001',
   apiKey:     localStorage.getItem('segcar_apikey')     || 'troque-esta-chave-secreta',
-  homeLat:    localStorage.getItem('segcar_home_lat')    ? parseFloat(localStorage.getItem('segcar_home_lat')) : -22.383120,
-  homeLng:    localStorage.getItem('segcar_home_lng')    ? parseFloat(localStorage.getItem('segcar_home_lng')) : -47.551840,
+  homeLat:    localStorage.getItem('segcar_home_lat')    ? parseFloat(localStorage.getItem('segcar_home_lat')) : -22.544885,
+  homeLng:    localStorage.getItem('segcar_home_lng')    ? parseFloat(localStorage.getItem('segcar_home_lng')) : -47.378445,
   homeRadius: localStorage.getItem('segcar_home_radius') ? parseInt(localStorage.getItem('segcar_home_radius'), 10) : 50,
   tripStart:  localStorage.getItem('segcar_trip_start')  || null,
   mapTheme:   localStorage.getItem('segcar_map_theme')   || 'dark'
@@ -331,7 +137,7 @@ var tripStartCoords       = null;    // [lat, lng] do ponto inicial
 var isSavingTrip          = false;   // guard contra duplo-save
 var recGlowInterval       = null;    // piscar do dot de gravação
 
-/* ─── Map Init (Centro de Rio Claro - SP) ─────────────────────── */
+/* ─── Map Init (Campus UNIP) ─────────────────────── */
 const map = L.map('map', { zoomControl: true, attributionControl: true });
 
 map.on('click', function(e) {
@@ -373,8 +179,8 @@ function changeMapTheme() {
 
 applyMapTheme(config.mapTheme);
 
-// Coordenadas iniciais centralizadas em Rio Claro - SP
-map.setView([-22.4114, -47.5614], 13);
+// Coordenadas iniciais centralizadas no Campus UNIP
+map.setView([-22.544885, -47.378445], 16);
 
 /* Custom vehicle marker */
 const vehicleIcon = L.divIcon({
@@ -1124,7 +930,7 @@ function centerMap() {
   if (marker) {
     map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), 15), { duration: 0.8 });
   } else {
-    map.flyTo([-22.4114, -47.5614], 14, { duration: 0.8 });
+    map.flyTo([-22.544885, -47.378445], 16, { duration: 0.8 });
   }
 }
 
@@ -1165,7 +971,7 @@ function clearStoredRoute() {
 }
 
 function restoreRouteFromStorage() {
-  // Limpa qualquer rota antiga de antes da finalização da viagem Rio Claro -> UNIP Limeira
+  // Limpa qualquer rota antiga de demonstracao
   if (!localStorage.getItem('segcar_trip100_closed')) {
     clearStoredRoute();
     localStorage.setItem('segcar_trip100_closed', 'true');
@@ -1217,7 +1023,7 @@ function finishCurrentTripManual() {
     clearRoute();
     isRouteFrozen = true;
     fetchTripsFromDb().then(function() {
-      showToast('Rota "Rio Claro para UNIP Limeira" encerrada e disponível em Viagens & Rotas!', 'success');
+      showToast('Rota "Circuito Campus UNIP" encerrada e disponível em Viagens & Rotas!', 'success');
       switchView('view-trips');
     });
   }
@@ -1475,14 +1281,14 @@ function checkGeofence(pos) {
   if (dist <= config.homeRadius) {
     if (!isRouteFrozen) {
       isRouteFrozen = true;
-      showToast('Veículo entrou na cerca de casa (Rio Claro). Gravação pausada.', 'info');
+      showToast('Veículo entrou no perímetro seguro (UNIP). Gravação pausada.', 'info');
     }
     if (banner) banner.classList.add('active');
-    if (details) details.textContent = 'Veículo está a ' + dist.toFixed(0) + 'm de Casa (Jd. Floridiana). Rota congelada.';
+    if (details) details.textContent = 'Veículo está a ' + dist.toFixed(0) + 'm do ponto central da UNIP. Rota congelada.';
   } else {
     if (isRouteFrozen) {
       isRouteFrozen = false;
-      showToast('Veículo saiu da cerca de casa. Retomando gravação.', 'info');
+      showToast('Veículo saiu do perímetro seguro (UNIP). Retomando gravação.', 'info');
     }
     if (banner) banner.classList.remove('active');
   }
@@ -1493,7 +1299,7 @@ function startDefineHomeMap() {
   switchView('view-live');
   var mapEl = document.getElementById('map');
   if (mapEl) mapEl.style.cursor = 'crosshair';
-  showToast('Clique no mapa de Rio Claro para marcar a localização de casa.', 'info');
+  showToast('Clique no mapa da UNIP para marcar a localização central.', 'info');
 }
 
 function setHomeHere() {
@@ -1517,7 +1323,7 @@ function setHomeCoords(lat, lng) {
   isDefiningHome = false;
   document.getElementById('map').style.cursor = '';
   
-  showToast('Localização de casa atualizada.', 'success');
+  showToast('Localização central (UNIP) atualizada.', 'success');
   
   if (lastData) {
     checkGeofence(lastData);
@@ -1530,7 +1336,7 @@ function updateHomeOnMap() {
   
   if (config.homeLat !== null && config.homeLng !== null) {
     homeMarker = L.marker([config.homeLat, config.homeLng], { icon: homeIcon }).addTo(map);
-    homeMarker.bindPopup('<b>Casa do João (Jd. Floridiana)</b><br/>Área de cerca virtual.');
+    homeMarker.bindPopup('<b>Campus UNIP</b><br/>Área de cerca virtual.');
     
     homeCircle = L.circle([config.homeLat, config.homeLng], {
       color: '#10b981',
@@ -2171,7 +1977,7 @@ const VIEW_METADATA = {
   'view-live': {
     title: 'Mapa & Rastreamento Ao Vivo',
     shortTitle: 'Mapa Ao Vivo',
-    subtitle: 'Monitoramento de telemetria em tempo real em Rio Claro-SP'
+    subtitle: 'Monitoramento de telemetria em tempo real - UNIP'
   },
   'view-telemetry': {
     title: 'Telemetria & Diagnóstico Veicular',
@@ -2477,7 +2283,7 @@ function loadAccountDetails() {
         var streetEl = document.getElementById('acc-street');
         var detailsEl = document.getElementById('acc-neighborhood-city');
         if (streetEl) streetEl.textContent = addr.street + ', ' + (addr.number || 'S/N') + (addr.complement ? ' - ' + addr.complement : '');
-        if (detailsEl) detailsEl.textContent = (addr.neighborhood || 'Centro') + ' • ' + (addr.city || 'Rio Claro') + ' - ' + (addr.state || 'SP') + ' • CEP: ' + (addr.zip_code || '13500-000');
+        if (detailsEl) detailsEl.textContent = (addr.neighborhood || 'Campus UNIP') + ' • ' + (addr.city || 'Limeira') + ' - ' + (addr.state || 'SP') + ' • CEP: ' + (addr.zip_code || '13484-350');
 
         // Preencher formulário de edição
         setBillingFormFields(addr);

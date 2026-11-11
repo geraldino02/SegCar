@@ -522,8 +522,8 @@ function initGlobalMap() {
   const mapContainer = document.getElementById('fleet-map');
   if (!mapContainer) return;
 
-  // Centro inicial padrão em Rio Claro - SP
-  fleetMap = L.map('fleet-map', { zoomControl: true }).setView([-22.398, -47.558], 13);
+  // Centro inicial padrão no Campus UNIP
+  fleetMap = L.map('fleet-map', { zoomControl: true }).setView([-22.544885, -47.378445], 15);
 
   // Camada de mapa escuro OpenStreetMap
   const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

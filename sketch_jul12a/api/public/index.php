@@ -722,8 +722,8 @@ if ($method === 'POST' && $path === '/api/register') {
             $street = optionalText($payload, 'street');
             $number = optionalText($payload, 'number') ?? 'S/N';
             $complement = optionalText($payload, 'complement');
-            $neighborhood = optionalText($payload, 'neighborhood') ?? 'Centro';
-            $city = optionalText($payload, 'city') ?? 'Rio Claro';
+            $neighborhood = optionalText($payload, 'neighborhood') ?? 'Campus UNIP';
+            $city = optionalText($payload, 'city') ?? 'Limeira';
             $state = optionalText($payload, 'state') ?? 'SP';
 
             if ($zipCode && $street) {
@@ -1489,7 +1489,7 @@ if ($path === '/api/addresses' || $path === '/api/address') {
         $number = requiredText($payload, 'number');
         $complement = optionalText($payload, 'complement');
         $neighborhood = requiredText($payload, 'neighborhood');
-        $city = optionalText($payload, 'city') ?? 'Rio Claro';
+        $city = optionalText($payload, 'city') ?? 'Limeira';
         $state = optionalText($payload, 'state') ?? 'SP';
 
         if ($pdo) {
@@ -1658,8 +1658,8 @@ if ($method === 'GET' && ($path === '/api/admin/metrics' || $path === '/api/admi
                 'plate' => 'RCO-2026',
                 'client_name' => 'João Silva',
                 'velocidade_kmh' => 0.0,
-                'latitude' => -22.383120,
-                'longitude' => -47.551840,
+                'latitude' => -22.544885,
+                'longitude' => -47.378445,
                 'received_at' => date('Y-m-d H:i:s'),
             ]
         ],
@@ -1697,8 +1697,8 @@ if ($path === '/api/admin/devices') {
                     'api_key' => 'troque-esta-chave-secreta',
                     'active' => 1,
                     'client_name' => 'João Silva',
-                    'latitude' => -22.383120,
-                    'longitude' => -47.551840,
+                    'latitude' => -22.544885,
+                    'longitude' => -47.378445,
                     'velocidade_kmh' => 0.0,
                     'last_ping' => date('Y-m-d H:i:s'),
                     'is_online' => true,
